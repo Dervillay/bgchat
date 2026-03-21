@@ -197,7 +197,8 @@ def check_daily_token_limit(f):
     def decorated(*args, **kwargs):
         try:
             user_id = get_user_id_from_auth_header()
-            if current_app.orchestrator.user_has_exceeded_daily_token_limit(user_id):
+            bypass_ids = current_app.config.get('TOKEN_LIMIT_BYPASS_USER_IDS', frozenset())
+            if user_id not in bypass_ids and current_app.orchestrator.user_has_exceeded_daily_token_limit(user_id):
                 return authorization_error("You have run out of free messages for today. Please come back again tomorrow.")
             return f(*args, **kwargs)
         except AuthenticationError as e:
