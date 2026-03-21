@@ -34,6 +34,12 @@ class Config:
         self.AUTH0_AUDIENCE = os.environ.get('AUTH0_AUDIENCE')
         self.ALGORITHM = os.environ.get('ALGORITHM', 'RS256')
 
+        # Comma-separated Auth0 user IDs (JWT `sub`) that skip daily token limits (e.g. owner testing in prod)
+        bypass_raw = os.environ.get('TOKEN_LIMIT_BYPASS_USER_IDS', '')
+        self.TOKEN_LIMIT_BYPASS_USER_IDS = frozenset(
+            uid.strip() for uid in bypass_raw.split(',') if uid.strip()
+        )
+
     def _validate_env_vars(self):
         """Validate environment variables."""
         missing_vars = []

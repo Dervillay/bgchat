@@ -1,6 +1,7 @@
 # Configuration constants
 DEFAULT_TIMEOUT_SECONDS = 5
 MAX_COST_PER_USER_PER_DAY_USD = 0.01
+JWT_VALIDATION_LEEWAY_SECONDS = 60
 
 # Error message constants
 # User ID validation errors

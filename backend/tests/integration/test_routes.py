@@ -3,7 +3,16 @@ Integration tests for API routes.
 """
 import json
 from unittest.mock import Mock, patch
+
+import pytest
 from flask import Response
+
+
+@pytest.fixture(autouse=True)
+def reset_token_limit_bypass(app):
+    """TOKEN_LIMIT_BYPASS_USER_IDS is mutable app config; reset so tests do not leak."""
+    app.config["TOKEN_LIMIT_BYPASS_USER_IDS"] = frozenset()
+    yield
 
 
 class TestKnownBoardGames:
@@ -256,6 +265,21 @@ class TestDetermineBoardGame:
 
         assert response.status_code == 403
 
+    def test_determine_board_game_token_limit_bypass_user(self, client, app, auth_headers):
+        """Bypass list skips daily limit check for matching Auth0 sub."""
+        app.config['TOKEN_LIMIT_BYPASS_USER_IDS'] = frozenset(['test-user-123'])
+        app.orchestrator.user_has_exceeded_daily_token_limit = Mock(return_value=True)
+        app.orchestrator.determine_board_game = Mock(return_value="Wingspan")
+
+        response = client.post(
+            '/determine-board-game',
+            json={"question": "How do I play?"},
+            headers=auth_headers
+        )
+
+        assert response.status_code == 200
+        app.orchestrator.user_has_exceeded_daily_token_limit.assert_not_called()
+
     def test_determine_board_game_missing_field(self, client, auth_headers):
         """Test error for missing question field."""
         response = client.post(
@@ -364,6 +388,28 @@ class TestAskQuestion:
         )
 
         assert response.status_code == 403
+
+    def test_ask_question_token_limit_bypass_user(self, client, app, auth_headers):
+        """Bypass list skips daily limit check for matching Auth0 sub."""
+        def mock_stream():
+            yield "ok"
+
+        app.config['TOKEN_LIMIT_BYPASS_USER_IDS'] = frozenset(['test-user-123'])
+        app.orchestrator.get_known_board_games = Mock(return_value=["Wingspan"])
+        app.orchestrator.user_has_exceeded_daily_token_limit = Mock(return_value=True)
+        app.orchestrator.ask_question = Mock(return_value=mock_stream())
+
+        response = client.post(
+            '/ask-question',
+            json={
+                "question": "How do I play?",
+                "board_game": "Wingspan"
+            },
+            headers=auth_headers
+        )
+
+        assert response.status_code == 200
+        app.orchestrator.user_has_exceeded_daily_token_limit.assert_not_called()
 
     def test_ask_question_internal_error(self, client, app, auth_headers):
         """Test internal error handling."""

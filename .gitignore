@@ -2,6 +2,7 @@ __pycache__
 backend/resources
 backend/app/database.json
 backend/myenv
+backend/.venv
 backend/coverage.xml
 backend/.coverage
 backend/htmlcov/

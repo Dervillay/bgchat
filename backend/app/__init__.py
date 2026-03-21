@@ -48,7 +48,12 @@ def add_security_headers(response):
 def create_app():
     app = Flask(__name__)
 
-    flask_env = os.environ.get('FLASK_ENV')
+    flask_env = os.environ.get('FLASK_ENV', 'development')
+    if flask_env not in config:
+        raise ValueError(
+            f"Invalid FLASK_ENV={flask_env!r}. "
+            f"Use one of: {', '.join(sorted(config))}"
+        )
     loaded_config = config[flask_env]()
 
     allowed_origins = []
