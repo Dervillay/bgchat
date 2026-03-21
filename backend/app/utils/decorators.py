@@ -5,7 +5,13 @@ import re
 from flask import current_app, request
 
 from app.utils.auth import get_token_from_auth_header, get_user_id_from_auth_header, validate_jwt, AuthenticationError
-from app.utils.responses import validation_error, authentication_error, authorization_error
+from app.utils.responses import (
+    validation_error,
+    authentication_error,
+    authorization_error,
+    internal_error,
+)
+
 from app.config.constants import (
     ERROR_BOARD_GAME_NAME_CANNOT_BE_EMPTY,
     ERROR_BOARD_GAME_NAME_TOO_LONG,
@@ -117,8 +123,8 @@ def validate_auth_token(f):
             return f(*args, **kwargs)
         except AuthenticationError as e:
             return authentication_error(e.message)
-        except Exception as e:
-            return authentication_error(f"Authentication error: {str(e)}")
+        except Exception:
+            return internal_error("Failed to validate authentication")
 
     return decorated
 
@@ -196,7 +202,7 @@ def check_daily_token_limit(f):
             return f(*args, **kwargs)
         except AuthenticationError as e:
             return authentication_error(e.message)
-        except Exception as e:
-            return authentication_error(f"Authentication error: {str(e)}")
+        except Exception:
+            return internal_error("Failed to verify usage limits")
 
     return decorated

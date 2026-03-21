@@ -9,6 +9,7 @@ from flask import request, current_app
 
 from app.config.constants import (
     DEFAULT_TIMEOUT_SECONDS,
+    JWT_VALIDATION_LEEWAY_SECONDS,
     ERROR_USER_ID_CANNOT_BE_EMPTY,
     ERROR_USER_ID_TOO_LONG,
     ERROR_INVALID_USER_ID_FORMAT,
@@ -183,7 +184,8 @@ def validate_jwt(token: str) -> None:
             jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(rsa_key)),
             algorithms=[algorithm],
             audience=auth0_audience,
-            issuer=f"https://{auth0_domain}/"
+            issuer=f"https://{auth0_domain}/",
+            leeway=JWT_VALIDATION_LEEWAY_SECONDS,
         )
     except Exception as e:
         raise AuthenticationError(f"{ERROR_INVALID_TOKEN}: {str(e)}")
