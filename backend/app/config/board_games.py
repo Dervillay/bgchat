@@ -5,7 +5,7 @@ BOARD_GAMES = [
         "rulebooks": [
             {
                 "name": "Glossary",
-                "download_url": "https://comparajogos-forum.s3.dualstack.sa-east-1.amazonaws.com/uploads/original/2X/e/e6fb769d1c8b7730e40cbe95d93c641ed83638c0.pdf"
+                "download_url": "https://comparajogos-forum.s3.dualstack.sa-east-1.amazonaws.com/uploads/original/2X/e/e6fb769d1c8b7730e40cbe95d93c641ed83638c0.pdf",
             },
             {
                 "name": "Learn to Play Guide",
@@ -44,11 +44,11 @@ BOARD_GAMES = [
             },
             {
                 "name": "Dune Imperium - Rise of Ix",
-                "download_url": "https://cdn.1j1ju.com/medias/f1/d5/28-dune-imperium-rise-of-ix-rulebook.pdf"
+                "download_url": "https://cdn.1j1ju.com/medias/f1/d5/28-dune-imperium-rise-of-ix-rulebook.pdf",
             },
             {
                 "name": "Dune Imperium - Immortality",
-                "download_url": "https://cdn.1j1ju.com/medias/aa/6e/73-dune-imperium-immortality-rulebook.pdf"
+                "download_url": "https://cdn.1j1ju.com/medias/aa/6e/73-dune-imperium-immortality-rulebook.pdf",
             },
         ]
     },
@@ -106,11 +106,15 @@ BOARD_GAMES = [
         "rulebooks": [
             {
                 "name": "Rules Reference",
-                "download_url": "https://images-cdn.fantasyflightgames.com/filer_public/c2/69/c269b9e2-8d9a-420b-a807-2b164dd54977/ti-k0289_rules_referencecompressed.pdf"
+                "download_url": "https://images-cdn.fantasyflightgames.com/filer_public/c2/69/c269b9e2-8d9a-420b-a807-2b164dd54977/ti-k0289_rules_referencecompressed.pdf",
             },
             {
                 "name": "Learn to Play",
-                "download_url": "https://images-cdn.fantasyflightgames.com/filer_public/f3/c6/f3c66512-8e19-4f30-a0d4-d7d75701fd37/ti-k0289_learn_to_playcompressed.pdf"
+                "download_url": "https://images-cdn.fantasyflightgames.com/filer_public/f3/c6/f3c66512-8e19-4f30-a0d4-d7d75701fd37/ti-k0289_learn_to_playcompressed.pdf",
+            },
+            {
+                "name": "Prophecy of Kings Expansion Rules",
+                "download_url": "https://images-cdn.fantasyflightgames.com/filer_public/bd/a2/bda2d75d-0481-4563-a443-d45e4dea46f8/ti10_rulebook_web-good.pdf",
             },
         ]
     },

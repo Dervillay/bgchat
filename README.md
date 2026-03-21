@@ -1,27 +1,32 @@
-## BGChat
+<div align="center">
+    <img src="https://i.ibb.co/XTgVg4V/BGChat.png" alt="BGChat Logo" width="150">
+    <h1>BGChat</h1>
+    <h4>AI board game rules lawyer with citations and rulebook previews.
+    <br/>
+    <a href="https://bg-chat.com">Try it out here.</a></h4>
+    <a href="https://ko-fi.com/dervillay">
+        <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support BGChat on Ko-fi" />
+    </a>
+</div>
 
-BGChat saves you time hunting through board game rulebooks when you want to look up rules and settle disputes. To support its answers, it'll cite the rulebooks to you and give you handy links to the relevant pages so you can check for yourself.
+## Overview
 
-**[Try it out here!](https://bg-chat.com)** 🎲
+BGChat saves you time flicking through board game rulebooks when you want to look up rules and settle disputes, citing relevant passages with helpful previews of the rulebook pages where they appear.
 
-### Key features
-- **AI-Powered Q&A**: Uses AI to answer board game questions
+### Features
+
 - **Semantic Search**: Finds relevant rulebook sections using embeddings
-- **Rulebook PDFs**: Cites and provides access to rulebook PDFs
-- **User Authentication**: Auth0 integration
-- **Per-User Persistence**: Saves chat history and user settings
-- **Token Management**: Daily usage limits and tracking
-
-### Support the project
-
-If BGChat has ever helped you settle board game disputes, consider supporting its development.
-BGChat is free to use for eveyone, and your support helps to keep it that way.
-
-[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/dervillay)
+- **AI-Powered Q&A**: Uses AI to answer questions using these sections
+- **Rulebook PDFs**: Cites and shows pages of rulebooks used to inform the answer
+- **Board Game Geek Integration**: Searches and finds answers on the BGG forum when rulebooks aren't clear
+- **User Authentication**: Auth0 integration for secure user account management and authentication
+- **User Settings**: Saves each user's chat history, token usage and settings between sessions
+- **Usage Limits**: Handles setting daily token usage limits
 
 ## Developer setup
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - Python 3.12+
 - MongoDB Atlas account
@@ -36,51 +41,45 @@ git clone https://github.com/Dervillay/BGChat.git
 cd BGChat
 ```
 
-2. **Backend Setup**
+2. **Backend setup**
 ```bash
 cd backend
 python3 -m venv myenv
 source myenv/bin/activate  # On Windows: myenv\Scripts\activate
 pip install -r requirements.txt
+cp .env.example .env.development
+# Update .env.development with your actual values
 ```
 
-3. **Frontend Setup**
+3. **Frontend setup**
 ```bash
 cd frontend
 npm install
-```
-
-4. **Environment Configuration**
-
-Copy the example environment files and fill in your actual values:
-
-**Backend:**
-```bash
-cd backend
 cp .env.example .env.development
-# Edit .env.development with your actual values
+# Update .env.development with your actual values
 ```
 
-**Frontend:**
-```bash
-cd frontend
-cp .env.example .env.development
-# Edit .env with your actual values
-```
-
-5. **Start Development Servers**
+4. **Start development servers**
 ```bash
 ./start-dev.sh
 ```
 
+## Feedback / Issues
+- To request new board games or features, please submit them through the [BGChat app](https://bg-chat.com)
+- For issues and bug reports, please file a [GitHub issue](https://github.com/Dervillay/BGChat/issues)
+
 ## Contributing
 
-Contributions are welcome! Just:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+Contributions are welcome! Just make a PR and I'll take a look when I get chance.
+
+## Support the project
+
+If BGChat has ever helped you settle board game disputes, consider supporting its development.
+BGChat is free to use for everyone, and your support helps to keep it that way.
+
+All donations above the amount required to host BGChat (~7 GBP per month) go to [high impact charities](https://www.farmkind.giving/) that make animals less sad.
+
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/dervillay)
 
 ## License
 
