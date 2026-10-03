@@ -149,6 +149,60 @@ BOARD_GAMES = [
             }
         ]
     },
+    {
+        "name": "Lost Cities",
+        "rulebooks": [
+            {
+                "name": "Lost Cities",
+                "download_url": "https://bghub.org/r/lostcities.pdf",
+            }
+        ]
+    },
+    {
+        "name": "Star Wars: The Deckbuilding Game",
+        "rulebooks": [
+            {
+                "name": "Rulebook",
+                "download_url": "https://images-cdn.fantasyflightgames.com/filer_public/2d/41/2d41282a-2f80-41da-9555-61ee9ec4e61a/swg01_rulebook_v2-compressed.pdf",
+            }
+        ]
+    },
+    {
+        "name": "Azul",
+        "rulebooks": [
+            {
+                "name": "Rulebook",
+                "download_url": "https://tesera.ru/images/items/1108676/EN-Azul-Rules.pdf",
+            }
+        ]
+    },
+    {
+        "name": "Star Realms",
+        "rulebooks": [
+            {
+                "name": "Rulebook",
+                "download_url": "https://boardgame.bg/star%20realms%20rules.pdf",
+            }
+        ]
+    },
+    {
+        "name": "Sea Salt and Paper",
+        "rulebooks": [
+            {
+                "name": "Rulebook",
+                "download_url": "https://studiobombyx.com/assets/SSAP_rulebook_EN-3.pdf",
+            }
+        ]
+    },
+    {
+        "name": "The Crew: Mission Deep Sea",
+        "rulebooks": [
+            {
+                "name": "Rulebook",
+                "download_url": "https://boardgame.bg/the%20crew%20mission%20deep%20sea%20rules.pdf",
+            }
+        ]
+    },
 ]
 
 BOARD_GAMES_STRING_LIST = "\n".join([f"- {board_game['name']}" for board_game in BOARD_GAMES])
