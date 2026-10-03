@@ -50,19 +50,6 @@ const ChatInterface = () => {
 		setMessages(prev => [...prev, message]);
 	});
 
-	const chatInput = (
-		<ChatInput
-			inputValue={inputValue}
-			isLoading={isLoading}
-			selectedBoardGame={selectedBoardGame}
-			setInputValue={setInputValue}
-			onMessageSend={handleSendMessage}
-			knownBoardGames={knownBoardGames}
-			onSelectBoardGame={handleSelectBoardGame}
-			variant={hasInteracted || isUsingMobile ? "bottomFixed" : "default"}
-		/>
-	);
-
 	useEffect(() => {
 		handleGetKnownBoardGames();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -291,6 +278,19 @@ const ChatInterface = () => {
 		setGreeting(pickGreeting());
 		setHasInteracted(false);
 	};
+
+	const chatInput = (
+		<ChatInput
+			inputValue={inputValue}
+			isLoading={isLoading}
+			selectedBoardGame={selectedBoardGame}
+			setInputValue={setInputValue}
+			onMessageSend={handleSendMessage}
+			knownBoardGames={knownBoardGames}
+			onSelectBoardGame={handleSelectBoardGame}
+			variant={hasInteracted || isUsingMobile ? "bottomFixed" : "default"}
+		/>
+	);
 
 	return (
 		<Box
