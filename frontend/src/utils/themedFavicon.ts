@@ -16,7 +16,7 @@ export function createThemedFaviconDataUrl(
 	ctx.drawImage(image, 0, 0, size, size);
 	const imageData = ctx.getImageData(0, 0, size, size);
 
-	const colors = gradients[themeId].match(/#[A-Fa-f0-9]{6}/g) || ["#A8EDEA", "#FED6E3"];
+	const colors = gradients[themeId].match(/#[A-Fa-f0-9]{6}/g) || ["#88D4AB", "#6BC5A0", "#5BBFBA"];
 	const gradient = ctx.createLinearGradient(0, 0, size, size);
 	colors.forEach((color, i) => gradient.addColorStop(i / (colors.length - 1), color));
 	ctx.clearRect(0, 0, size, size);

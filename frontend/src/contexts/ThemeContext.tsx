@@ -10,8 +10,8 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const THEME_STORAGE_KEY = 'bgchat-selected-theme';
-/** Light turquoise (`#A8EDEA` → `#FED6E3`) */
-export const DEFAULT_THEME_ID = 5;
+/** Soft green (`#88D4AB` → `#6BC5A0` → `#5BBFBA`) — last swatch in the themes menu */
+export const DEFAULT_THEME_ID = gradients.length - 1;
 
 const clampThemeId = (value: number): number => 
     Math.max(0, Math.min(value, gradients.length - 1));
