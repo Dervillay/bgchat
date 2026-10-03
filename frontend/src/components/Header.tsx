@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Text, Flex } from "@chakra-ui/react";
 import { DarkModeToggle } from "./DarkModeToggle.tsx";
 import { UserProfileMenu } from "./UserProfileMenu.tsx";
-import { useCurrentGradient } from "../hooks/useCurrentGradient.ts";
+import { ThemedFaviconIcon } from "./ThemedFaviconIcon.tsx";
 
 interface HeaderProps {
 	onOpenFeedbackModal: () => void;
@@ -11,8 +11,6 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onOpenFeedbackModal, isUsingMobile, onLogoClick }) => {
-	const currentGradient = useCurrentGradient();
-	
 	return (
 		<Box
 			position="fixed"
@@ -53,20 +51,26 @@ export const Header: React.FC<HeaderProps> = ({ onOpenFeedbackModal, isUsingMobi
 				}
 			}}
 		>
-		<Text 
-			bgGradient={currentGradient} 
-			bgClip="text" 
-			fontSize={{ base: "2xl", md: "3xl" }} 
-			fontWeight="regular"
-			cursor="pointer"
-			onClick={onLogoClick}
-			_hover={{
-				opacity: 0.8,
-			}}
-			transition="opacity 0.2s"
-		>
-			BGChat
-		</Text>
+			<Flex
+				align="center"
+				gap={{ base: 2, md: 2.5 }}
+				cursor="pointer"
+				onClick={onLogoClick}
+				_hover={{ opacity: 0.8 }}
+				transition="opacity 0.2s"
+			>
+				<ThemedFaviconIcon boxSize={{ base: "1.9rem", md: "2.15rem" }} />
+				<Text
+					fontFamily="heading"
+					color="chakra-body-text"
+					fontSize={{ base: "xl", md: "2xl" }}
+					fontWeight="500"
+					letterSpacing="-0.02em"
+					lineHeight="1"
+				>
+					BGChat
+				</Text>
+			</Flex>
 			<Flex align="center" gap={2}>
 				<DarkModeToggle />
 				<UserProfileMenu 

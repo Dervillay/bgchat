@@ -77,28 +77,31 @@ export const MessageContainer: React.FC<MessageContainerProps> = ({
 						))}
 						{isThinking && <ThinkingPlaceholder />}
 						{messages.length >= 2 && !isLoading && messages.some(msg => msg.role === "user") && (
-							<Flex justify="flex-end" w="100%" mt={1}>
+							<Flex justify="flex-end" w="100%" mt={1} position="relative" zIndex={6}>
 								<Tooltip 
 									label="Reset chat"
 									placement="bottom"
 									offset={[0, 0]}
 								>
-									<IconButton
-										icon={<FiRefreshCw />}
-										onClick={onClearChat}
-										size="sm"
-										variant="ghost"
-										color="gray.500"
-										_hover={{ color: "gray.700" }}
-										_dark={{
-											color: "#a0a0a0",
-											_hover: { 
-												color: "#e0e0e0",
-												filter: "brightness(1.3)"
-											}
-										}}
-										aria-label="Reset chat"
-									/>
+									{/* Span so Tooltip can attach a ref without breaking IconButton clicks */}
+									<span>
+										<IconButton
+											icon={<FiRefreshCw />}
+											onClick={onClearChat}
+											size="sm"
+											variant="ghost"
+											color="gray.500"
+											_hover={{ color: "gray.700" }}
+											_dark={{
+												color: "#a0a0a0",
+												_hover: { 
+													color: "#e0e0e0",
+													filter: "brightness(1.3)"
+												}
+											}}
+											aria-label="Reset chat"
+										/>
+									</span>
 								</Tooltip>
 							</Flex>
 						)}

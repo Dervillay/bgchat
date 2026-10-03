@@ -13,6 +13,11 @@ echo "🚀 Starting BGChat in development mode..."
 export FLASK_ENV=development
 export REACT_APP_ENVIRONMENT=development
 
+# WSL + /mnt/c (Windows filesystem) does not reliably emit inotify events, so
+# webpack/CRA won't hot-reload unless we poll for file changes.
+export CHOKIDAR_USEPOLLING=true
+export WATCHPACK_POLLING=true
+
 # Function to cleanup background processes
 cleanup() {
     echo "🛑 Shutting down development servers..."
