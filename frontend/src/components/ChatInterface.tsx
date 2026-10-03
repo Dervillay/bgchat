@@ -45,10 +45,23 @@ const ChatInterface = () => {
 	const fetchWithAuth = useFetchWithAuth();
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const scrollableContainerRef = useRef<HTMLDivElement>(null);
-	const isUsingMobile = useBreakpointValue({ base: true, md: false });
+	const isUsingMobile = useBreakpointValue({ base: true, md: false }) ?? true;
 	const messageQueue = new MessageQueue((message) => {
 		setMessages(prev => [...prev, message]);
 	});
+
+	const chatInput = (
+		<ChatInput
+			inputValue={inputValue}
+			isLoading={isLoading}
+			selectedBoardGame={selectedBoardGame}
+			setInputValue={setInputValue}
+			onMessageSend={handleSendMessage}
+			knownBoardGames={knownBoardGames}
+			onSelectBoardGame={handleSelectBoardGame}
+			variant={hasInteracted || isUsingMobile ? "bottomFixed" : "default"}
+		/>
+	);
 
 	useEffect(() => {
 		handleGetKnownBoardGames();
@@ -284,7 +297,7 @@ const ChatInterface = () => {
 			position="fixed"
 			inset={0}
 			w="100%"
-			h={{ base: "100dvh", md: "100vh" }}
+			h={{ base: "100%", md: "100vh" }}
 			overflow="hidden"
 		>
 			<Header
@@ -294,32 +307,76 @@ const ChatInterface = () => {
 			/>
 			<Box position="relative" h="100%" w="100%" maxW="40rem" mx="auto">
 				{hasInteracted ? (
-					<MessageContainer
-						messages={messages}
-						isThinking={isThinking}
-						isLoading={isLoading}
-						isScrollButtonVisible={isScrollButtonVisible}
-						onEditMessage={handleEditMessage}
-						onCloseError={handleCloseError}
-						onClearChat={handleClearChat}
-						onScrollToBottom={scrollToBottom}
-						onScroll={handleScroll}
-						scrollableContainerRef={scrollableContainerRef}
-						messagesEndRef={messagesEndRef}
-					/>
+					<>
+						<MessageContainer
+							messages={messages}
+							isThinking={isThinking}
+							isLoading={isLoading}
+							isScrollButtonVisible={isScrollButtonVisible}
+							onEditMessage={handleEditMessage}
+							onCloseError={handleCloseError}
+							onClearChat={handleClearChat}
+							onScrollToBottom={scrollToBottom}
+							onScroll={handleScroll}
+							scrollableContainerRef={scrollableContainerRef}
+							messagesEndRef={messagesEndRef}
+						/>
+						<Box
+							position="absolute"
+							left={{ base: "0.75rem", md: 0 }}
+							right={{ base: "0.75rem", md: 0 }}
+							bottom={{ base: "0.75rem", md: "2rem" }}
+							zIndex={5}
+						>
+							{chatInput}
+						</Box>
+					</>
+				) : isUsingMobile ? (
+					<>
+						<Flex
+							position="absolute"
+							inset={0}
+							pb="6.5rem"
+							align="center"
+							justify="center"
+							px={4}
+						>
+							<Text
+								fontFamily="heading"
+								color="chakra-body-text"
+								fontSize="2.5rem"
+								fontWeight="500"
+								letterSpacing="-0.03em"
+								lineHeight="1"
+								textAlign="center"
+							>
+								{greeting}
+							</Text>
+						</Flex>
+						<Box
+							position="absolute"
+							left="0.75rem"
+							right="0.75rem"
+							bottom="0.75rem"
+							zIndex={5}
+						>
+							{chatInput}
+						</Box>
+					</>
 				) : (
 					<Flex
-						position="absolute"
-						inset={0}
-						pb={{ base: "6.5rem", md: "8rem" }}
-						align="center"
+						direction="column"
 						justify="center"
+						align="center"
+						gap={8}
+						h="100%"
+						w="100%"
 						px={4}
 					>
 						<Text
 							fontFamily="heading"
 							color="chakra-body-text"
-							fontSize={{ base: "2.5rem", md: "2.75rem" }}
+							fontSize="2.75rem"
 							fontWeight="500"
 							letterSpacing="-0.03em"
 							lineHeight="1"
@@ -327,27 +384,9 @@ const ChatInterface = () => {
 						>
 							{greeting}
 						</Text>
+						{chatInput}
 					</Flex>
 				)}
-				{/* Same dock in both states so the welcome view matches conversation placement. */}
-				<Box
-					position="absolute"
-					left={{ base: "0.75rem", md: 0 }}
-					right={{ base: "0.75rem", md: 0 }}
-					bottom={{ base: "0.75rem", md: "2rem" }}
-					zIndex={5}
-				>
-					<ChatInput
-						inputValue={inputValue}
-						isLoading={isLoading}
-						selectedBoardGame={selectedBoardGame}
-						setInputValue={setInputValue}
-						onMessageSend={handleSendMessage}
-						knownBoardGames={knownBoardGames}
-						onSelectBoardGame={handleSelectBoardGame}
-						variant="bottomFixed"
-					/>
-				</Box>
 			</Box>
 			{!isUsingMobile && (
 				<FeedbackLink onClick={handleOpenFeedbackModal} />

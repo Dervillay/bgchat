@@ -16,13 +16,14 @@ html, body {
   overscroll-behavior: none;
 }
 
+/* Fill the layout viewport with % (not dvh). With interactive-widget=resizes-content,
+   dvh can update on a different cadence than the layout resize and cause keyboard flicker. */
 @media (max-width: 768px) {
   html, body {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
-    height: 100dvh;
     overflow: hidden;
     overscroll-behavior: none;
     touch-action: manipulation;
@@ -34,7 +35,6 @@ html, body {
     inset: 0;
     width: 100%;
     height: 100%;
-    height: 100dvh;
     overflow: hidden;
     overscroll-behavior: none;
     background-color: var(--chakra-colors-chakra-body-bg);

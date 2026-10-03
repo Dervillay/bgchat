@@ -169,13 +169,6 @@ export const ChatInput: FC<ChatInputProps> = ({
 		setInputValue(e.target.value);
 	};
 
-	const handleFocus = () => {
-		// Stop the browser scrolling the page to the focused field (causes dock jitter).
-		window.scrollTo(0, 0);
-		document.documentElement.scrollTop = 0;
-		document.body.scrollTop = 0;
-	};
-
 	const containerStyle = variant === "bottomFixed"
 		? { ...theme.components.ChatInput.baseStyle.container, ...theme.components.ChatInput.variants.bottomFixed.container }
 		: theme.components.ChatInput.baseStyle.container;
@@ -191,7 +184,6 @@ export const ChatInput: FC<ChatInputProps> = ({
 				value={inputValue}
 				onChange={handleChange}
 				onKeyDown={handleKeyPress}
-				onFocus={handleFocus}
 				placeholder={
 					isListening
 						? "Listening…"
