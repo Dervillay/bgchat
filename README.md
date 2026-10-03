@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://i.ibb.co/XTgVg4V/BGChat.png" alt="BGChat Logo" width="150">
+    <img src="frontend/public/images/logo.png" alt="BGChat Logo" width="150">
     <h1>BGChat</h1>
     <h4>AI board game rules lawyer with citations and rulebook previews.
     <br/>

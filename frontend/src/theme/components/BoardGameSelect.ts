@@ -5,27 +5,31 @@ export const BoardGameSelect = {
     boxShadow: 'none',
     borderRadius: '1.5rem',
     minWidth: selectedBoardGame ? 'fit-content' : '11.5rem',
-    maxWidth: "13rem",
-    paddingRight: '1.25rem',
+    maxWidth: '13rem',
+    px: '0.75rem',
     color: 'chakra-body-text',
     fontSize: 'md',
+    backgroundColor: 'gray.200',
+    cursor: 'pointer',
+    _dark: {
+      backgroundColor: '#3a3a3a',
+    },
     '&:hover': {
       boxShadow: 'none',
-      border: '1px',
-      borderColor: 'chakra-body-border-focus',
+      border: 'none',
       cursor: 'pointer',
+      filter: 'brightness(0.97)',
     },
     '&:focus-within': {
       boxShadow: 'none',
-      border: '1px',
-      borderColor: 'chakra-body-border-focus',
+      border: 'none',
     },
     ...(state.isFocused && {
-      border: '1px',
-      borderColor: 'chakra-body-border-focus',
+      border: 'none',
+      boxShadow: 'none',
     }),
   }),
-  
+
   singleValue: (provided: any) => ({
     ...provided,
     overflow: 'hidden',
@@ -33,22 +37,17 @@ export const BoardGameSelect = {
     whiteSpace: 'nowrap',
     maxWidth: '100%',
   }),
-  
-  dropdownIndicator: (provided: any) => ({
-    ...provided,
-    color: 'chakra-body-text',
-    marginRight: '0',
-    position: 'absolute',
-  }),
-  
+
   menu: (provided: any) => ({
     ...provided,
     minWidth: { base: '13rem', md: '18rem' },
     borderRadius: '10px',
-    right: 0,
+    left: 0,
+    right: 'auto',
     borderColor: 'chakra-body-border',
+    zIndex: 1500,
   }),
-  
+
   menuList: (provided: any) => ({
     ...provided,
     borderRadius: '10px',
@@ -60,7 +59,7 @@ export const BoardGameSelect = {
       backgroundColor: 'chakra-body-message-bg',
     }
   }),
-  
+
   option: (provided: any, state: any) => ({
     ...provided,
     fontWeight: 'normal',
@@ -80,7 +79,7 @@ export const BoardGameSelect = {
       color: 'chakra-body-text-highlight',
     }),
   }),
-  
+
   placeholder: (provided: any) => ({
     ...provided,
     _dark: {

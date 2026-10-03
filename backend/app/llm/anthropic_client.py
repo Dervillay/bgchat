@@ -19,6 +19,22 @@ class AnthropicChatClient(ChatClient):
         self._client = anthropic.Anthropic(api_key=api_key)
         self._model_name = model_name
 
+    def _split_system_messages(
+        self,
+        messages: list[Message],
+    ) -> tuple[str | None, list[Message]]:
+        system_parts: list[str] = []
+        conversation: list[Message] = []
+
+        for message in messages:
+            if message["role"] == "system":
+                system_parts.append(message["content"])
+            else:
+                conversation.append(message)
+
+        system = "\n\n".join(system_parts) if system_parts else None
+        return system, conversation
+
     def _stream_events(self, stream) -> ChatStream:
         for event in stream:
             event_type = getattr(event, "type", None)
@@ -44,12 +60,15 @@ class AnthropicChatClient(ChatClient):
         allow_web_search: bool = False,
     ) -> str | ChatStream:
         try:
+            system, conversation = self._split_system_messages(messages)
             kwargs = {
                 "model": self._model_name,
                 "max_tokens": _DEFAULT_MAX_TOKENS,
-                "messages": messages,
+                "messages": conversation,
                 "tools": [_WEB_SEARCH_TOOL] if allow_web_search else [],
             }
+            if system:
+                kwargs["system"] = system
 
             if stream:
                 response = self._client.messages.create(**kwargs, stream=True)
