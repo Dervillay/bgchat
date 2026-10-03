@@ -17,10 +17,15 @@ declare global {
 }
 
 const GREETINGS = [
-	"Ready when you are.",
 	"What are we playing?",
-	"Let's clear that up…",
-	"Need a second opinion?",
+	"Rules lawyer, standing by.",
+	"The rulebook is open.",
+	"Table talk welcome.",
+	"Got a rules question?",
+	"Let's settle this.",
+	"No house rules required.",
+	"Analysis paralysis optional.",
+	"Ask before an argument starts.",
 ];
 
 const pickGreeting = () => GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
