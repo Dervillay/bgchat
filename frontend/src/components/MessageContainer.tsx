@@ -127,8 +127,11 @@ export const MessageContainer: React.FC<MessageContainerProps> = ({
 					size="md"
 					aria-label="Scroll to bottom"
 					bg="chakra-body-message-bg"
-					color="chakra-body-message-text"
-					variant="ghost"
+					color="chakra-body-text"
+					variant="solid"
+					opacity={1}
+					_hover={{ bg: "chakra-body-message-bg", filter: "brightness(0.97)" }}
+					_active={{ bg: "chakra-body-message-bg", filter: "brightness(0.95)" }}
 				/>
 			</Box>
 		</Box>

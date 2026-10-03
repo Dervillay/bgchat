@@ -5,7 +5,7 @@ export const ChatInput = {
       w: { base: "92%", md: "40rem" },
       maxW: { base: "92%", md: "40rem" },
       mx: "auto",
-      bg: "chakra-body-bg",
+      bg: "chakra-body-message-bg",
       borderRadius: "1.25rem",
       textColor: "chakra-body-text",
       h: "auto",
@@ -15,13 +15,7 @@ export const ChatInput = {
       pt: "0.25rem",
       pb: "0.5rem",
       gap: "0.5rem",
-      _dark: {
-        bg: "chakra-body-message-bg",
-      },
-      _light: {
-        bg: "gray.100",
-        border: "none",
-      },
+      border: "none",
       _focus: {
         outline: undefined,
       }

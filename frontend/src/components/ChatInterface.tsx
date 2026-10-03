@@ -9,7 +9,6 @@ import { Header } from "./Header.tsx";
 import { MessageContainer } from "./MessageContainer.tsx";
 import { FeedbackModal } from "./FeedbackModal.tsx";
 import { FeedbackLink } from "./FeedbackLink.tsx";
-import { useVisualViewportShell } from "../hooks/useVisualViewportShell.ts";
 
 declare global {
 	interface Window {
@@ -46,9 +45,7 @@ const ChatInterface = () => {
 	const fetchWithAuth = useFetchWithAuth();
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const scrollableContainerRef = useRef<HTMLDivElement>(null);
-	const shellRef = useRef<HTMLDivElement>(null);
 	const isUsingMobile = useBreakpointValue({ base: true, md: false });
-	useVisualViewportShell(shellRef, Boolean(isUsingMobile));
 	const messageQueue = new MessageQueue((message) => {
 		setMessages(prev => [...prev, message]);
 	});
@@ -284,10 +281,8 @@ const ChatInterface = () => {
 
 	return (
 		<Box
-			ref={shellRef}
 			position="fixed"
-			top={0}
-			left={0}
+			inset={0}
 			w="100%"
 			h={{ base: "100dvh", md: "100vh" }}
 			overflow="hidden"
@@ -297,8 +292,8 @@ const ChatInterface = () => {
 				isUsingMobile={isUsingMobile}
 				onLogoClick={handleLogoClick}
 			/>
-			{hasInteracted ? (
-				<Box position="relative" h="100%" w="100%" maxW="40rem" mx="auto">
+			<Box position="relative" h="100%" w="100%" maxW="40rem" mx="auto">
+				{hasInteracted ? (
 					<MessageContainer
 						messages={messages}
 						isThinking={isThinking}
@@ -312,48 +307,36 @@ const ChatInterface = () => {
 						scrollableContainerRef={scrollableContainerRef}
 						messagesEndRef={messagesEndRef}
 					/>
-					<Box
+				) : (
+					<Flex
 						position="absolute"
-						left={{ base: "0.75rem", md: 0 }}
-						right={{ base: "0.75rem", md: 0 }}
-						bottom={{ base: "0.75rem", md: "2rem" }}
-						zIndex={5}
+						inset={0}
+						pb={{ base: "6.5rem", md: "8rem" }}
+						align="center"
+						justify="center"
+						px={4}
 					>
-						<ChatInput
-							inputValue={inputValue}
-							isLoading={isLoading}
-							selectedBoardGame={selectedBoardGame}
-							setInputValue={setInputValue}
-							onMessageSend={handleSendMessage}
-							knownBoardGames={knownBoardGames}
-							onSelectBoardGame={handleSelectBoardGame}
-							variant="bottomFixed"
-						/>
-					</Box>
-				</Box>
-			) : (
-				<Flex
-					direction="column"
-					justify="center"
-					align="center"
-					gap={8}
-					h="100%"
-					maxW="40rem"
-					mx="auto"
-					w="100%"
-					px={4}
+						<Text
+							fontFamily="heading"
+							color="chakra-body-text"
+							fontSize={{ base: "2.5rem", md: "2.75rem" }}
+							fontWeight="500"
+							letterSpacing="-0.03em"
+							lineHeight="1"
+							textAlign="center"
+						>
+							{greeting}
+						</Text>
+					</Flex>
+				)}
+				{/* Same dock in both states so the welcome view matches conversation placement. */}
+				<Box
+					position="absolute"
+					left={{ base: "0.75rem", md: 0 }}
+					right={{ base: "0.75rem", md: 0 }}
+					bottom={{ base: "0.75rem", md: "2rem" }}
+					zIndex={5}
 				>
-					<Text
-						fontFamily="heading"
-						color="chakra-body-text"
-						fontSize={{ base: "2.5rem", md: "2.75rem" }}
-						fontWeight="500"
-						letterSpacing="-0.03em"
-						lineHeight="1"
-						textAlign="center"
-					>
-						{greeting}
-					</Text>
 					<ChatInput
 						inputValue={inputValue}
 						isLoading={isLoading}
@@ -362,10 +345,10 @@ const ChatInterface = () => {
 						onMessageSend={handleSendMessage}
 						knownBoardGames={knownBoardGames}
 						onSelectBoardGame={handleSelectBoardGame}
-						variant="default"
+						variant="bottomFixed"
 					/>
-				</Flex>
-			)}
+				</Box>
+			</Box>
 			{!isUsingMobile && (
 				<FeedbackLink onClick={handleOpenFeedbackModal} />
 			)}

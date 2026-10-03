@@ -10,12 +10,6 @@ export const UserMessage = {
   messageBox: {
     maxW: { base: "85%", md: "70%" },
     bg: "chakra-body-message-bg",
-    _dark: { 
-      bg: "chakra-body-message-bg",
-      _placeholder: {
-        color: "#a0a0a0"
-      }
-    },
     color: "chakra-body-message-text",
     px: { base: 3, md: 5 },
     py: { base: 2, md: 2.5 },
@@ -33,13 +27,12 @@ export const UserMessage = {
     maxH: "15rem",
     maxW: { base: "85%", md: "70%" },
     bg: "chakra-body-message-bg",
-    _dark: { 
-      bg: "chakra-body-message-bg",
+    color: "chakra-body-message-text",
+    _dark: {
       _placeholder: {
         color: "#a0a0a0"
       }
     },
-    color: "chakra-body-message-text",
     px: { base: 3, md: 5 },
     py: { base: 2, md: 2.5 },
     borderRadius: "1.5rem",
