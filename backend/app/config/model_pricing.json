@@ -1,0 +1,107 @@
+{
+  "gpt-4o-mini": {
+    "provider": "openai",
+    "one_million_input_tokens": 0.15,
+    "one_million_output_tokens": 0.6,
+    "one_thousand_web_searches": 10.0
+  },
+  "gpt-4.1-mini": {
+    "provider": "openai",
+    "one_million_input_tokens": 0.4,
+    "one_million_output_tokens": 1.6,
+    "one_thousand_web_searches": 10.0
+  },
+  "gpt-5-mini": {
+    "provider": "openai",
+    "one_million_input_tokens": 0.25,
+    "one_million_output_tokens": 2.0,
+    "one_thousand_web_searches": 10.0
+  },
+  "text-embedding-ada-002": {
+    "provider": "openai",
+    "modality": "embedding",
+    "dimensions": 1536,
+    "one_million_input_tokens": 0.1,
+    "one_million_output_tokens": 0.0
+  },
+  "text-embedding-3-small": {
+    "provider": "openai",
+    "modality": "embedding",
+    "dimensions": 1536,
+    "one_million_input_tokens": 0.02,
+    "one_million_output_tokens": 0.0
+  },
+  "claude-haiku-4-5": {
+    "provider": "anthropic",
+    "one_million_input_tokens": 1.0,
+    "one_million_output_tokens": 5.0,
+    "one_thousand_web_searches": 10.0
+  },
+  "claude-sonnet-4-6": {
+    "provider": "anthropic",
+    "one_million_input_tokens": 3.0,
+    "one_million_output_tokens": 15.0,
+    "one_thousand_web_searches": 10.0
+  },
+  "claude-sonnet-5": {
+    "provider": "anthropic",
+    "one_million_input_tokens": 2.0,
+    "one_million_output_tokens": 10.0,
+    "one_thousand_web_searches": 10.0
+  },
+  "claude-opus-4-6": {
+    "provider": "anthropic",
+    "one_million_input_tokens": 5.0,
+    "one_million_output_tokens": 25.0,
+    "one_thousand_web_searches": 10.0
+  },
+  "claude-opus-5": {
+    "provider": "anthropic",
+    "one_million_input_tokens": 5.0,
+    "one_million_output_tokens": 25.0,
+    "one_thousand_web_searches": 10.0
+  },
+  "claude-opus-5-5": {
+    "provider": "anthropic",
+    "one_million_input_tokens": 4.0,
+    "one_million_output_tokens": 20.0,
+    "one_thousand_web_searches": 10.0
+  },
+  "gemini-2.5-flash": {
+    "provider": "gemini",
+    "one_million_input_tokens": 0.3,
+    "one_million_output_tokens": 2.5,
+    "one_thousand_web_searches": 35.0
+  },
+  "gemini-2.5-pro": {
+    "provider": "gemini",
+    "one_million_input_tokens": 1.25,
+    "one_million_output_tokens": 10.0,
+    "one_thousand_web_searches": 35.0
+  },
+  "gemini-3.5-flash-lite": {
+    "provider": "gemini",
+    "one_million_input_tokens": 0.3,
+    "one_million_output_tokens": 2.5,
+    "one_thousand_web_searches": 14.0
+  },
+  "gemini-3.5-flash": {
+    "provider": "gemini",
+    "one_million_input_tokens": 1.5,
+    "one_million_output_tokens": 9.0,
+    "one_thousand_web_searches": 14.0
+  },
+  "gemini-3.8-flash": {
+    "provider": "gemini",
+    "one_million_input_tokens": 0.75,
+    "one_million_output_tokens": 3.75,
+    "one_thousand_web_searches": 14.0
+  },
+  "gemini-embedding-001": {
+    "provider": "gemini",
+    "modality": "embedding",
+    "dimensions": 1536,
+    "one_million_input_tokens": 0.15,
+    "one_million_output_tokens": 0.0
+  }
+}
