@@ -4,11 +4,12 @@ import logging
 
 from tqdm import tqdm
 from pypdf import PdfReader
-import openai
 
 from app.config.paths import RULEBOOKS_PATH
 from app.config.board_games import BOARD_GAMES
 from app.config.constants import DEFAULT_TIMEOUT_SECONDS
+from app.llm import create_embedding_client
+from app.llm.embedding_types import EmbeddingClient
 from app.mongodb_client import MongoDBClient
 from config import config
 
@@ -81,17 +82,17 @@ def initialise_mongodb_client(env_config):
     return mongodb_client
 
 
-def initialise_openai_client(env_config):
-    print_bold("Initializing OpenAI client...")
-    openai_client = openai.OpenAI(api_key=env_config.OPENAI_API_KEY)
+def initialise_embedding_client(env_config):
+    print_bold(f"Initializing embedding client ({env_config.EMBEDDING_MODEL})...")
+    embedding_client = create_embedding_client(env_config)
     print("Done\n")
 
-    return openai_client
+    return embedding_client
 
 
 def process_and_store_rulebook_text(
     mongodb_client: MongoDBClient,
-    openai_client: openai.OpenAI
+    embedding_client: EmbeddingClient,
 ):
     print_bold("Processing and storing text from rulebooks...")
     for board_game in BOARD_GAMES:
@@ -122,11 +123,10 @@ def process_and_store_rulebook_text(
                         text = page.extract_text()
 
                         try:
-                            response = openai_client.embeddings.create(
-                                model="text-embedding-ada-002",
-                                input=text
+                            embedding, _token_count = embedding_client.embed(
+                                text,
+                                task_type="RETRIEVAL_DOCUMENT",
                             )
-                            embedding = response.data[0].embedding
 
                             pages_to_store.append({
                                 "board_game": board_game["name"],
@@ -153,6 +153,6 @@ if __name__ == "__main__":
 
     env_config = get_environment_config()
     mongodb_client = initialise_mongodb_client(env_config)
-    openai_client = initialise_openai_client(env_config)
+    embedding_client = initialise_embedding_client(env_config)
 
-    process_and_store_rulebook_text(mongodb_client, openai_client)
+    process_and_store_rulebook_text(mongodb_client, embedding_client)

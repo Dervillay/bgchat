@@ -31,7 +31,7 @@ BGChat saves you time flicking through board game rulebooks when you want to loo
 - Python 3.12+
 - MongoDB Atlas account
 - Auth0 account
-- OpenAI API key
+- API keys for whichever providers your `CHAT_MODEL` / `EMBEDDING_MODEL` use
 
 ### Setup
 
@@ -50,6 +50,18 @@ pip install -r requirements.txt
 cp .env.example .env.development
 # Update .env.development with your actual values
 ```
+
+Model selection (backend env; both required):
+```env
+# Must exist in app/config/model_pricing.json; providers are inferred from those entries
+CHAT_MODEL=gpt-4o-mini
+EMBEDDING_MODEL=text-embedding-ada-002
+OPENAI_API_KEY=your-openai-api-key
+# ANTHROPIC_API_KEY=...
+# GEMINI_API_KEY=...
+```
+
+Changing `EMBEDDING_MODEL` requires re-embedding rulebook pages so vectors stay in the same space/dimensions as your MongoDB index.
 
 3. **Frontend setup**
 ```bash

@@ -26,8 +26,12 @@ class Config:
         self.MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD')
         self.MONGODB_DB_NAME = os.environ.get('MONGODB_DB_NAME')
 
-        # OpenAI
+        # AI providers
         self.OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+        self.ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY')
+        self.GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+        self.CHAT_MODEL = os.environ.get('CHAT_MODEL')
+        self.EMBEDDING_MODEL = os.environ.get('EMBEDDING_MODEL')
 
         # Auth0
         self.AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
@@ -60,9 +64,36 @@ class Config:
         if not self.MONGODB_DB_NAME:
             missing_vars.append('MONGODB_DB_NAME')
 
-        # OpenAI configuration
-        if not self.OPENAI_API_KEY:
-            missing_vars.append('OPENAI_API_KEY')
+        # Model configuration
+        if not self.CHAT_MODEL:
+            missing_vars.append('CHAT_MODEL')
+        if not self.EMBEDDING_MODEL:
+            missing_vars.append('EMBEDDING_MODEL')
+
+        # Imported lazily to avoid a circular import with app.__init__
+        from app.config.models import (
+            get_model_provider,
+            validate_chat_model,
+            validate_embedding_model,
+        )
+
+        if self.CHAT_MODEL and self.EMBEDDING_MODEL:
+            try:
+                self.CHAT_MODEL = validate_chat_model(self.CHAT_MODEL.strip())
+                self.EMBEDDING_MODEL = validate_embedding_model(self.EMBEDDING_MODEL.strip())
+            except ValueError as e:
+                raise ValueError(str(e)) from e
+
+            used_providers = {
+                get_model_provider(self.CHAT_MODEL),
+                get_model_provider(self.EMBEDDING_MODEL),
+            }
+            if 'openai' in used_providers and not self.OPENAI_API_KEY:
+                missing_vars.append('OPENAI_API_KEY')
+            if 'anthropic' in used_providers and not self.ANTHROPIC_API_KEY:
+                missing_vars.append('ANTHROPIC_API_KEY')
+            if 'gemini' in used_providers and not self.GEMINI_API_KEY:
+                missing_vars.append('GEMINI_API_KEY')
 
         # Auth0 configuration
         if not self.AUTH0_DOMAIN:
