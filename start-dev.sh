@@ -53,7 +53,7 @@ BACKEND_PID=$!
 sleep 2
 
 # Start frontend development server
-echo "⚛️  Starting React development server..."
+echo "⚛️ Starting React development server..."
 (
     cd "$FRONTEND_DIR"
     npm start
