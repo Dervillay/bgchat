@@ -15,18 +15,18 @@ html, body {
   overflow: hidden;
 }
 
-/* Prevent mobile browsers from adjusting viewport when keyboard appears */
+/* Fill the dynamic viewport on mobile; keyboard resizes this via interactive-widget. */
 @media (max-width: 768px) {
   html, body {
+    height: 100%;
     height: 100dvh;
-    height: -webkit-fill-available;
     overflow: hidden;
     background-color: var(--chakra-colors-chakra-body-bg);
   }
   
   #root {
+    height: 100%;
     height: 100dvh;
-    height: -webkit-fill-available;
     overflow: hidden;
     background-color: var(--chakra-colors-chakra-body-bg);
   }

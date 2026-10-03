@@ -1,4 +1,4 @@
-import { FC, ChangeEvent, FocusEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FC, ChangeEvent, CSSProperties, FocusEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Input, IconButton, Spinner, Flex, Container, Text, Box, useBreakpointValue } from "@chakra-ui/react";
 import { FaArrowUp, FaMicrophone, FaStop } from "react-icons/fa";
 import { BoardGameSelect } from "./BoardGameSelect.tsx";
@@ -31,6 +31,7 @@ export const ChatInput: FC<ChatInputProps> = ({
 }) => {
 	const [isFocused, setIsFocused] = useState(false);
 	const [speechError, setSpeechError] = useState<string | null>(null);
+	const [mobilePinStyle, setMobilePinStyle] = useState<CSSProperties>({});
 	const inputValueRef = useRef(inputValue);
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -40,8 +41,10 @@ export const ChatInput: FC<ChatInputProps> = ({
 	const resizeAnimCleanupRef = useRef<(() => void) | null>(null);
 	inputValueRef.current = inputValue;
 
-	const isUsingMobile = useBreakpointValue({ base: true, md: false });
-	const pinToBottom = variant === "bottomFixed" || (Boolean(isUsingMobile) && isFocused);
+	// Prefer the real breakpoint once known; default to mobile so keyboard pinning
+	// is ready before the first client layout pass.
+	const isUsingMobile = useBreakpointValue({ base: true, md: false }) ?? true;
+	const pinToBottom = variant === "bottomFixed" || (isUsingMobile && isFocused);
 
 	const resizeTextarea = useCallback((animate: boolean) => {
 		const el = textareaRef.current;
@@ -153,27 +156,18 @@ export const ChatInput: FC<ChatInputProps> = ({
 	};
 
 	// Keep the pinned input's bottom edge glued above the mobile keyboard.
-	// Re-anchor on resize so linebreak growth expands upward, not under the keyboard.
+	// Uses visualViewport + React styles so Chakra's `bottom` prop can't fight us.
 	useEffect(() => {
 		const el = containerRef.current;
-		if (!el) {
-			return;
-		}
-
-		const clearMobilePosition = () => {
-			el.style.top = "";
-			el.style.bottom = "";
-		};
-
-		if (!pinToBottom || !isUsingMobile) {
-			clearMobilePosition();
+		if (!el || !pinToBottom || !isUsingMobile) {
+			setMobilePinStyle({});
+			syncMobilePositionRef.current = null;
 			return;
 		}
 
 		const visualViewport = window.visualViewport;
 		if (!visualViewport) {
-			el.style.top = "auto";
-			el.style.bottom = `${MOBILE_KEYBOARD_GAP_PX}px`;
+			setMobilePinStyle({ top: "auto", bottom: `${MOBILE_KEYBOARD_GAP_PX}px` });
 			return;
 		}
 
@@ -182,8 +176,10 @@ export const ChatInput: FC<ChatInputProps> = ({
 			const bottomEdge =
 				visualViewport.offsetTop + visualViewport.height - MOBILE_KEYBOARD_GAP_PX;
 			const top = bottomEdge - height;
-			el.style.bottom = "auto";
-			el.style.top = `${Math.max(visualViewport.offsetTop + MOBILE_KEYBOARD_GAP_PX, top)}px`;
+			setMobilePinStyle({
+				top: `${Math.max(visualViewport.offsetTop + MOBILE_KEYBOARD_GAP_PX, top)}px`,
+				bottom: "auto",
+			});
 		};
 
 		syncMobilePositionRef.current = syncToVisualViewport;
@@ -204,7 +200,7 @@ export const ChatInput: FC<ChatInputProps> = ({
 			visualViewport.removeEventListener("resize", syncToVisualViewport);
 			visualViewport.removeEventListener("scroll", syncToVisualViewport);
 			window.removeEventListener("resize", syncToVisualViewport);
-			clearMobilePosition();
+			setMobilePinStyle({});
 		};
 	}, [pinToBottom, isUsingMobile]);
 
@@ -236,6 +232,10 @@ export const ChatInput: FC<ChatInputProps> = ({
 
 	const handleFocus = () => {
 		setIsFocused(true);
+		// iOS fires visualViewport resize during the keyboard animation; resync a few times.
+		window.requestAnimationFrame(() => syncMobilePositionRef.current?.());
+		window.setTimeout(() => syncMobilePositionRef.current?.(), 150);
+		window.setTimeout(() => syncMobilePositionRef.current?.(), 350);
 	};
 
 	const handleBlur = (e: FocusEvent<HTMLTextAreaElement>) => {
@@ -253,7 +253,7 @@ export const ChatInput: FC<ChatInputProps> = ({
 	const speechLabel = isListening ? "Stop listening" : "Voice input";
 
 	return (
-		<Container ref={containerRef} {...containerStyle}>
+		<Container ref={containerRef} {...containerStyle} style={mobilePinStyle}>
 			<Input
 				as="textarea"
 				ref={textareaRef}
