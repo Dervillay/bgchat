@@ -2,7 +2,7 @@ from typing import TypedDict, Literal
 
 class Message(TypedDict):
     """Type definition for a chat message."""
-    role: Literal["user", "assistant"]
+    role: Literal["system", "user", "assistant"]
     content: str
 
 class RulebookPage(TypedDict):

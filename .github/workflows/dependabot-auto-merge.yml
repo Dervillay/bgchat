@@ -1,5 +1,5 @@
-# Enables GitHub auto-merge on Dependabot PRs. The merge completes once all
-# required status checks pass (e.g. Backend Tests, Frontend Tests).
+# Approves Dependabot PRs and enables GitHub auto-merge. The merge completes
+# once required approvals and status checks pass (e.g. Backend/Frontend Tests).
 name: Dependabot auto-merge
 
 on:
@@ -18,6 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
+      - name: Approve PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr review --approve "$PR_URL"
+
       - name: Enable auto-merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
