@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Text, Flex, useBreakpointValue } from "@chakra-ui/react";
 import { ChatInput } from "./ChatInput.tsx";
-import { useCurrentGradient } from "../hooks/useCurrentGradient.ts";
 import { useFetchWithAuth } from "../utils/fetchWithAuth.ts";
 import { withError } from "../utils/withError.ts";
 import { MessageQueue } from "../utils/messageQueue.ts";
@@ -10,6 +9,7 @@ import { Header } from "./Header.tsx";
 import { MessageContainer } from "./MessageContainer.tsx";
 import { FeedbackModal } from "./FeedbackModal.tsx";
 import { FeedbackLink } from "./FeedbackLink.tsx";
+import { ThemedFaviconIcon } from "./ThemedFaviconIcon.tsx";
 
 declare global {
 	interface Window {
@@ -17,11 +17,21 @@ declare global {
 	}
 }
 
+const GREETINGS = [
+	"Ready when you are.",
+	"What are we playing?",
+	"Let's clear that up…",
+	"Need a second opinion?",
+];
+
+const pickGreeting = () => GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+
 const ChatInterface = () => {
 	const [knownBoardGames, setKnownBoardGames] = useState<string[]>([]);
 	const [selectedBoardGame, setSelectedBoardGame] = useState<string>("");
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [inputValue, setInputValue] = useState("");
+	const [greeting, setGreeting] = useState(pickGreeting);
 	const [hasInteracted, setHasInteracted] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isThinking, setIsThinking] = useState(false);
@@ -29,7 +39,6 @@ const ChatInterface = () => {
 	const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 	
 	const fetchWithAuth = useFetchWithAuth();
-	const currentGradient = useCurrentGradient();
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const scrollableContainerRef = useRef<HTMLDivElement>(null);
 	const isUsingMobile = useBreakpointValue({ base: true, md: false });
@@ -229,6 +238,8 @@ const ChatInterface = () => {
 	};
 
 	const handleClearChat = async () => {
+		const previousMessages = messages;
+		setMessages([]);
 		try {
 			if (selectedBoardGame) {
 				await withError(() => fetchWithAuth(
@@ -239,8 +250,8 @@ const ChatInterface = () => {
 					}
 				));
 			}
-			setMessages([]);
 		} catch (error: any) {
+			setMessages(previousMessages);
 			messageQueue.push({ content: "Failed to clear chat: " + error.message, role: "error" });
 		}
 	};
@@ -260,6 +271,7 @@ const ChatInterface = () => {
 	const handleLogoClick = () => {
 		setSelectedBoardGame("");
 		setMessages([]);
+		setGreeting(pickGreeting());
 		setHasInteracted(false);
 	};
 
@@ -268,11 +280,12 @@ const ChatInterface = () => {
 			direction="column" 
 			justify="center" 
 			align="center"
-			gap={2}
+			gap={hasInteracted ? 2 : 8}
 			h={{ base: "100dvh", md: "100vh" }}
-			maxW="30rem"
+			maxW="40rem"
 			mx="auto"
 			overflow="hidden"
+			w="100%"
 		>
 		<Header 
 			onOpenFeedbackModal={handleOpenFeedbackModal}
@@ -280,15 +293,20 @@ const ChatInterface = () => {
 			onLogoClick={handleLogoClick}
 		/>
 			{!hasInteracted ? (
-				<Text
-					bgGradient={currentGradient}
-					bgClip="text" 
-					fontSize="5xl" 
-					fontWeight="regular"
-					textAlign="center"
-				>
-					How can I help?
-				</Text>
+				<Flex align="center" justify="center" gap={{ base: 2.5, md: 3 }} px={4}>
+					<ThemedFaviconIcon boxSize={{ base: "2.75rem", md: "3.15rem" }} />
+					<Text
+						fontFamily="heading"
+						color="chakra-body-text"
+						fontSize={{ base: "2.5rem", md: "2.75rem" }}
+						fontWeight="500"
+						letterSpacing="-0.03em"
+						lineHeight="1"
+						textAlign="center"
+					>
+						{greeting}
+					</Text>
+				</Flex>
 			) : (
 				<>
 					<MessageContainer

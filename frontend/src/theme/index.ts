@@ -16,6 +16,10 @@ export const theme = extendTheme({
         initialColorMode: 'dark',
         useSystemColorMode: false,
     },
+    fonts: {
+        heading: `"Outfit", system-ui, sans-serif`,
+        body: `"Outfit", system-ui, sans-serif`,
+    },
     semanticTokens: {
         colors: {
             'chakra-body-bg': {

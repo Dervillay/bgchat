@@ -57,7 +57,7 @@ describe('BoardGameSelect', () => {
       />
     );
 
-    expect(screen.getByText('Select a board game')).toBeInTheDocument();
+    expect(screen.getByText('Select a board game…')).toBeInTheDocument();
   });
 
   it('renders with selected game', () => {
@@ -111,7 +111,7 @@ describe('BoardGameSelect', () => {
       />
     );
 
-    expect(screen.getByText('Select a board game')).toBeInTheDocument();
+    expect(screen.getByText('Select a board game…')).toBeInTheDocument();
   });
 
   it('updates displayed value when selectedBoardGame prop changes', () => {
