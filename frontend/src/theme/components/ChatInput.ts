@@ -69,22 +69,17 @@ export const ChatInput = {
     }
   },
   variants: {
+    // Docked inside the visual-viewport shell so it rides keyboard resize with the layout.
     bottomFixed: {
       container: {
-        // Same width as the centered input on md+. On mobile, inset from screen edges.
-        w: { base: "auto", md: "40rem" },
-        maxW: { base: "100%", md: "40rem" },
+        w: "100%",
+        maxW: "100%",
+        mx: 0,
         borderRadius: "1.25rem",
         border: "none",
-        position: "fixed",
-        // On mobile, ChatInput may pin via measured visualViewport `top` while the keyboard is open.
-        bottom: { base: "0.75rem", md: "2rem" },
-        left: { base: "0.75rem", md: "50%" },
-        right: { base: "0.75rem", md: "auto" },
-        transform: { base: "none", md: "translateX(-50%)" },
-        // Keep below message actions (reset sits in the scroll area above this).
+        position: "relative",
         zIndex: 5,
       }
     }
   }
-}; 
+};

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Box, Text, Flex } from "@chakra-ui/react";
 import { DarkModeToggle } from "./DarkModeToggle.tsx";
 import { UserProfileMenu } from "./UserProfileMenu.tsx";
@@ -11,49 +11,12 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onOpenFeedbackModal, isUsingMobile, onLogoClick }) => {
-	const headerRef = useRef<HTMLDivElement | null>(null);
-
-	// Keep the header glued to the visible top. Keyboard focus can scroll the
-	// visual viewport, which would otherwise slide position:fixed off-screen.
-	useEffect(() => {
-		const el = headerRef.current;
-		if (!el || !isUsingMobile) {
-			if (el) {
-				el.style.top = "";
-			}
-			return;
-		}
-
-		const visualViewport = window.visualViewport;
-		const sync = () => {
-			const offsetTop = visualViewport?.offsetTop ?? 0;
-			el.style.top = `${offsetTop}px`;
-			if (window.scrollY !== 0 || window.scrollX !== 0) {
-				window.scrollTo(0, 0);
-			}
-		};
-
-		sync();
-		visualViewport?.addEventListener("resize", sync);
-		visualViewport?.addEventListener("scroll", sync);
-		window.addEventListener("scroll", sync, { passive: true });
-
-		return () => {
-			visualViewport?.removeEventListener("resize", sync);
-			visualViewport?.removeEventListener("scroll", sync);
-			window.removeEventListener("scroll", sync);
-			el.style.top = "";
-		};
-	}, [isUsingMobile]);
-
 	return (
 		<Box
-			ref={headerRef}
-			position="fixed"
+			position="absolute"
 			top={0}
 			left={0}
 			right={0}
-			transform="none"
 			h={{ base: "3.5rem", md: "4rem" }}
 			bgGradient={`linear(to bottom, var(--chakra-colors-chakra-body-bg) 50%, transparent 100%)`}
 			display="flex"

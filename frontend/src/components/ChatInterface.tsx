@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Text, Flex, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Text, Flex, useBreakpointValue } from "@chakra-ui/react";
 import { ChatInput } from "./ChatInput.tsx";
 import { useFetchWithAuth } from "../utils/fetchWithAuth.ts";
 import { withError } from "../utils/withError.ts";
@@ -9,6 +9,7 @@ import { Header } from "./Header.tsx";
 import { MessageContainer } from "./MessageContainer.tsx";
 import { FeedbackModal } from "./FeedbackModal.tsx";
 import { FeedbackLink } from "./FeedbackLink.tsx";
+import { useVisualViewportShell } from "../hooks/useVisualViewportShell.ts";
 
 declare global {
 	interface Window {
@@ -45,7 +46,9 @@ const ChatInterface = () => {
 	const fetchWithAuth = useFetchWithAuth();
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const scrollableContainerRef = useRef<HTMLDivElement>(null);
+	const shellRef = useRef<HTMLDivElement>(null);
 	const isUsingMobile = useBreakpointValue({ base: true, md: false });
+	useVisualViewportShell(shellRef, Boolean(isUsingMobile));
 	const messageQueue = new MessageQueue((message) => {
 		setMessages(prev => [...prev, message]);
 	});
@@ -280,37 +283,22 @@ const ChatInterface = () => {
 	};
 
 	return (
-		<Flex 
-			direction="column" 
-			justify="center" 
-			align="center"
-			gap={hasInteracted ? 2 : 8}
-			h={{ base: "100dvh", md: "100vh" }}
-			maxW="40rem"
-			mx="auto"
-			overflow="hidden"
+		<Box
+			ref={shellRef}
+			position="fixed"
+			top={0}
+			left={0}
 			w="100%"
+			h={{ base: "100dvh", md: "100vh" }}
+			overflow="hidden"
 		>
-		<Header 
-			onOpenFeedbackModal={handleOpenFeedbackModal}
-			isUsingMobile={isUsingMobile}
-			onLogoClick={handleLogoClick}
-		/>
-			{!hasInteracted ? (
-				<Text
-					fontFamily="heading"
-					color="chakra-body-text"
-					fontSize={{ base: "2.5rem", md: "2.75rem" }}
-					fontWeight="500"
-					letterSpacing="-0.03em"
-					lineHeight="1"
-					textAlign="center"
-					px={4}
-				>
-					{greeting}
-				</Text>
-			) : (
-				<>
+			<Header
+				onOpenFeedbackModal={handleOpenFeedbackModal}
+				isUsingMobile={isUsingMobile}
+				onLogoClick={handleLogoClick}
+			/>
+			{hasInteracted ? (
+				<Box position="relative" h="100%" w="100%" maxW="40rem" mx="auto">
 					<MessageContainer
 						messages={messages}
 						isThinking={isThinking}
@@ -324,18 +312,60 @@ const ChatInterface = () => {
 						scrollableContainerRef={scrollableContainerRef}
 						messagesEndRef={messagesEndRef}
 					/>
-				</>
+					<Box
+						position="absolute"
+						left={{ base: "0.75rem", md: 0 }}
+						right={{ base: "0.75rem", md: 0 }}
+						bottom={{ base: "0.75rem", md: "2rem" }}
+						zIndex={5}
+					>
+						<ChatInput
+							inputValue={inputValue}
+							isLoading={isLoading}
+							selectedBoardGame={selectedBoardGame}
+							setInputValue={setInputValue}
+							onMessageSend={handleSendMessage}
+							knownBoardGames={knownBoardGames}
+							onSelectBoardGame={handleSelectBoardGame}
+							variant="bottomFixed"
+						/>
+					</Box>
+				</Box>
+			) : (
+				<Flex
+					direction="column"
+					justify="center"
+					align="center"
+					gap={8}
+					h="100%"
+					maxW="40rem"
+					mx="auto"
+					w="100%"
+					px={4}
+				>
+					<Text
+						fontFamily="heading"
+						color="chakra-body-text"
+						fontSize={{ base: "2.5rem", md: "2.75rem" }}
+						fontWeight="500"
+						letterSpacing="-0.03em"
+						lineHeight="1"
+						textAlign="center"
+					>
+						{greeting}
+					</Text>
+					<ChatInput
+						inputValue={inputValue}
+						isLoading={isLoading}
+						selectedBoardGame={selectedBoardGame}
+						setInputValue={setInputValue}
+						onMessageSend={handleSendMessage}
+						knownBoardGames={knownBoardGames}
+						onSelectBoardGame={handleSelectBoardGame}
+						variant="default"
+					/>
+				</Flex>
 			)}
-			<ChatInput
-				inputValue={inputValue}
-				isLoading={isLoading}
-				selectedBoardGame={selectedBoardGame}
-				setInputValue={setInputValue}
-				onMessageSend={handleSendMessage}
-				knownBoardGames={knownBoardGames}
-				onSelectBoardGame={handleSelectBoardGame}
-				variant={hasInteracted ? "bottomFixed" : "default"}
-				/>
 			{!isUsingMobile && (
 				<FeedbackLink onClick={handleOpenFeedbackModal} />
 			)}
@@ -343,7 +373,7 @@ const ChatInterface = () => {
 				isOpen={isFeedbackModalOpen}
 				onClose={handleCloseFeedbackModal}
 			/>
-		</Flex>
+		</Box>
 	);
 };
 

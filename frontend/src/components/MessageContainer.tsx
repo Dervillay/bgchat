@@ -35,12 +35,12 @@ export const MessageContainer: React.FC<MessageContainerProps> = ({
 	messagesEndRef,
 }) => {
 	return (
-		<>
+		<Box position="absolute" inset={0}>
 			<Box
-				position="fixed"
+				position="absolute"
 				pt="3.5rem"
 				top={0}
-				bottom={{ base: "8.5rem", md: "7rem" }}
+				bottom={0}
 				left={0}
 				right={0}
 				overflowY="auto"
@@ -53,7 +53,8 @@ export const MessageContainer: React.FC<MessageContainerProps> = ({
 					scrollbarWidth: 'none',
 				}}
 			>
-				<Container maxW="48rem" mx="auto" px={4} py={4}>
+				{/* Extra bottom padding so the latest message can rest above the floating input. */}
+				<Container maxW="48rem" mx="auto" px={4} pt={4} pb={{ base: "7.5rem", md: "8.5rem" }}>
 					<VStack w="100%" spacing={4}>
 						{messages.map((message, index) => (
 							message.role === "user" ? (
@@ -110,10 +111,10 @@ export const MessageContainer: React.FC<MessageContainerProps> = ({
 				</Container>
 			</Box>
 			<Box
-				position="fixed"
+				position="absolute"
 				bottom="7.5rem"
 				left="50%"
-				zIndex={0}
+				zIndex={5}
 				opacity={isScrollButtonVisible ? 1 : 0}
 				transition="opacity 0.2s ease-in-out, transform 0.2s ease-in-out"
 				transform={isScrollButtonVisible ? "translate(-50%, 0)" : "translate(-50%, 10px)"}
@@ -130,6 +131,6 @@ export const MessageContainer: React.FC<MessageContainerProps> = ({
 					variant="ghost"
 				/>
 			</Box>
-		</>
+		</Box>
 	);
 };

@@ -1,11 +1,10 @@
-import { FC, ChangeEvent, FocusEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
-import { Input, IconButton, Spinner, Flex, Container, Text, Box, useBreakpointValue } from "@chakra-ui/react";
+import { FC, ChangeEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Input, IconButton, Spinner, Flex, Container, Text, Box } from "@chakra-ui/react";
 import { FaArrowUp, FaMicrophone, FaStop } from "react-icons/fa";
 import { BoardGameSelect } from "./BoardGameSelect.tsx";
 import { useSpeechToText } from "../hooks/useSpeechToText.ts";
 import { theme } from "../theme/index.ts";
 
-const MOBILE_KEYBOARD_GAP_PX = 12;
 const TEXTAREA_HEIGHT_TRANSITION = "height 0.12s ease-out";
 
 interface ChatInputProps {
@@ -29,19 +28,13 @@ export const ChatInput: FC<ChatInputProps> = ({
 	onSelectBoardGame,
 	variant = "default",
 }) => {
-	const [isFocused, setIsFocused] = useState(false);
 	const [speechError, setSpeechError] = useState<string | null>(null);
 	const inputValueRef = useRef(inputValue);
-	const containerRef = useRef<HTMLDivElement | null>(null);
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 	const hasResizedOnceRef = useRef(false);
 	const speechPrefixRef = useRef("");
-	const syncMobilePositionRef = useRef<(() => void) | null>(null);
 	const resizeAnimCleanupRef = useRef<(() => void) | null>(null);
 	inputValueRef.current = inputValue;
-
-	const isUsingMobile = useBreakpointValue({ base: true, md: false }) ?? true;
-	const pinToBottom = variant === "bottomFixed" || (isUsingMobile && isFocused);
 
 	const resizeTextarea = useCallback((animate: boolean) => {
 		const el = textareaRef.current;
@@ -67,7 +60,6 @@ export const ChatInput: FC<ChatInputProps> = ({
 			const textOutOfView = el.scrollHeight > el.clientHeight + 1;
 			el.style.overflowY = textOutOfView ? "auto" : "hidden";
 			el.scrollTop = textOutOfView ? el.scrollHeight : 0;
-			syncMobilePositionRef.current?.();
 		};
 
 		// Once the scrollbar is needed, snap height and pin to the caret.
@@ -112,7 +104,6 @@ export const ChatInput: FC<ChatInputProps> = ({
 			if (isGrowing) {
 				el.scrollTop = 0;
 			}
-			// Mobile bottom-anchor is handled by the container ResizeObserver.
 		});
 	}, []);
 
@@ -152,62 +143,6 @@ export const ChatInput: FC<ChatInputProps> = ({
 		toggleSpeechRecognition();
 	};
 
-	// Pin above the keyboard using only the measured visual viewport (no estimates).
-	// With interactive-widget=resizes-content, CSS `bottom` usually lands correctly;
-	// this covers browsers that still overlay the keyboard.
-	useEffect(() => {
-		const el = containerRef.current;
-		if (!el || !pinToBottom || !isUsingMobile) {
-			syncMobilePositionRef.current = null;
-			return;
-		}
-
-		const clearMobilePosition = () => {
-			el.style.top = "";
-			el.style.bottom = "";
-			el.style.transform = "";
-		};
-
-		const visualViewport = window.visualViewport;
-		if (!visualViewport) {
-			clearMobilePosition();
-			return;
-		}
-
-		const syncToVisualViewport = () => {
-			// Keyboard focus can scroll the document; keep the shell pinned.
-			if (window.scrollY !== 0 || window.scrollX !== 0) {
-				window.scrollTo(0, 0);
-			}
-			const height = el.offsetHeight;
-			const bottomEdge =
-				visualViewport.offsetTop + visualViewport.height - MOBILE_KEYBOARD_GAP_PX;
-			const top = bottomEdge - height;
-			el.style.transform = "";
-			el.style.bottom = "auto";
-			el.style.top = `${Math.max(visualViewport.offsetTop + MOBILE_KEYBOARD_GAP_PX, top)}px`;
-		};
-
-		syncMobilePositionRef.current = syncToVisualViewport;
-		syncToVisualViewport();
-		const resizeObserver = new ResizeObserver(syncToVisualViewport);
-		resizeObserver.observe(el);
-		visualViewport.addEventListener("resize", syncToVisualViewport);
-		visualViewport.addEventListener("scroll", syncToVisualViewport);
-		window.addEventListener("resize", syncToVisualViewport);
-
-		return () => {
-			if (syncMobilePositionRef.current === syncToVisualViewport) {
-				syncMobilePositionRef.current = null;
-			}
-			resizeObserver.disconnect();
-			visualViewport.removeEventListener("resize", syncToVisualViewport);
-			visualViewport.removeEventListener("scroll", syncToVisualViewport);
-			window.removeEventListener("resize", syncToVisualViewport);
-			clearMobilePosition();
-		};
-	}, [pinToBottom, isUsingMobile]);
-
 	useEffect(() => {
 		if (!speechError) {
 			return;
@@ -234,27 +169,14 @@ export const ChatInput: FC<ChatInputProps> = ({
 		setInputValue(e.target.value);
 	};
 
-	const handleFocus = () => {
-		setIsFocused(true);
-		syncMobilePositionRef.current?.();
-	};
-
-	const handleBlur = (e: FocusEvent<HTMLTextAreaElement>) => {
-		const nextTarget = e.relatedTarget as Node | null;
-		if (nextTarget && containerRef.current?.contains(nextTarget)) {
-			return;
-		}
-		setIsFocused(false);
-	};
-
-	const containerStyle = pinToBottom
+	const containerStyle = variant === "bottomFixed"
 		? { ...theme.components.ChatInput.baseStyle.container, ...theme.components.ChatInput.variants.bottomFixed.container }
 		: theme.components.ChatInput.baseStyle.container;
 
 	const speechLabel = isListening ? "Stop listening" : "Voice input";
 
 	return (
-		<Container ref={containerRef} {...containerStyle}>
+		<Container {...containerStyle}>
 			<Input
 				as="textarea"
 				ref={textareaRef}
@@ -262,8 +184,6 @@ export const ChatInput: FC<ChatInputProps> = ({
 				value={inputValue}
 				onChange={handleChange}
 				onKeyDown={handleKeyPress}
-				onFocus={handleFocus}
-				onBlur={handleBlur}
 				placeholder={
 					isListening
 						? "Listening…"
