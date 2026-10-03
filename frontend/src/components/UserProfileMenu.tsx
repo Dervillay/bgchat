@@ -172,4 +172,4 @@ export const UserProfileMenu = ({ onOpenFeedbackModal, isUsingMobile }: UserProf
 			</MenuList>
 		</Menu>
 	);
-}; 
+};

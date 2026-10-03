@@ -1,8 +1,6 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: "Outfit", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -17,18 +15,18 @@ html, body {
   overflow: hidden;
 }
 
-/* Prevent mobile browsers from adjusting viewport when keyboard appears */
+/* Fill the dynamic viewport on mobile; keyboard resizes this via interactive-widget. */
 @media (max-width: 768px) {
   html, body {
+    height: 100%;
     height: 100dvh;
-    height: -webkit-fill-available;
     overflow: hidden;
     background-color: var(--chakra-colors-chakra-body-bg);
   }
   
   #root {
+    height: 100%;
     height: 100dvh;
-    height: -webkit-fill-available;
     overflow: hidden;
     background-color: var(--chakra-colors-chakra-body-bg);
   }
