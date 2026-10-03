@@ -6,6 +6,8 @@ python-dotenv==1.2.2
 PyJWT==2.13.0
 pymongo==4.17.0
 openai==2.45.0
+anthropic==1.11.0
+google-genai==1.75.0
 tiktoken==0.13.0
 pypdf==6.14.2
 requests==2.34.2

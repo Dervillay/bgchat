@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { gradients } from '../theme/gradients';
 import { useFetchWithAuth } from '../utils/fetchWithAuth';
+import { createThemedFaviconDataUrl, FAVICON_IMAGE_SRC } from '../utils/themedFavicon';
 
 interface ThemeContextType {
     themeId: number;
@@ -9,53 +10,34 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const THEME_STORAGE_KEY = 'bgchat-selected-theme';
+/** Soft green (`#88D4AB` → `#6BC5A0` → `#5BBFBA`) — last swatch in the themes menu */
+export const DEFAULT_THEME_ID = gradients.length - 1;
 
 const clampThemeId = (value: number): number => 
     Math.max(0, Math.min(value, gradients.length - 1));
 
 const parseThemeId = (value: string | null): number => {
     const parsed = parseInt(value ?? '', 10);
-    return isNaN(parsed) ? 0 : clampThemeId(parsed);
+    return isNaN(parsed) ? DEFAULT_THEME_ID : clampThemeId(parsed);
 };
 
 function updateFavicon(themeId: number, image: HTMLImageElement | null) {
     if (!image) return;
 
-    const size = 32;
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const dataUrl = createThemedFaviconDataUrl(themeId, image, 64);
+    if (!dataUrl) return;
 
-    // Get original image alpha mask
-    ctx.drawImage(image, 0, 0, size, size);
-    const imageData = ctx.getImageData(0, 0, size, size);
+    // Replace all icon links so static .ico / cached icons don't win over the theme.
+    document
+        .querySelectorAll<HTMLLinkElement>("link[rel='icon'], link[rel='shortcut icon']")
+        .forEach((el) => el.remove());
 
-    // Draw gradient
-    const colors = gradients[themeId].match(/#[A-Fa-f0-9]{6}/g) || ["#667eea", "#764ba2"];
-    const gradient = ctx.createLinearGradient(0, 0, size, size);
-    colors.forEach((color, i) => gradient.addColorStop(i / (colors.length - 1), color));
-    ctx.clearRect(0, 0, size, size);
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, size, size);
-
-    // Apply alpha mask
-    const gradientData = ctx.getImageData(0, 0, size, size);
-    for (let i = 3; i < imageData.data.length; i += 4) {
-        gradientData.data[i] = imageData.data[i];
-    }
-    ctx.putImageData(gradientData, 0, 0);
-
-    // Update favicon
-    let link = document.querySelector<HTMLLinkElement>("link[rel='icon']");
-    if (!link) {
-        link = document.createElement("link");
-        link.rel = "icon";
-        document.head.appendChild(link);
-    }
+    const link = document.createElement("link");
+    link.rel = "icon";
     link.type = "image/png";
-    link.href = canvas.toDataURL("image/png");
+    link.sizes = "any";
+    link.href = dataUrl;
+    document.head.appendChild(link);
 }
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -69,12 +51,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     useEffect(() => {
         const img = new Image();
-        img.crossOrigin = "anonymous";
+        // Same-origin asset — avoid crossOrigin so the canvas isn't tainted.
         img.onload = () => {
             faviconImage.current = img;
             updateFavicon(themeId, img);
         };
-        img.src = `${process.env.PUBLIC_URL || ""}/images/favicon.ico`;
+        img.src = FAVICON_IMAGE_SRC;
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
