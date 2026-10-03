@@ -56,9 +56,10 @@ Model selection (backend env; both required):
 # Must exist in app/config/model_pricing.json; providers are inferred from those entries
 CHAT_MODEL=gpt-4o-mini
 EMBEDDING_MODEL=text-embedding-ada-002
+# For each provider your selected models are served by
 OPENAI_API_KEY=your-openai-api-key
-# ANTHROPIC_API_KEY=...
-# GEMINI_API_KEY=...
+ANTHROPIC_API_KEY=your-anthropic-api-key
+GEMINI_API_KEY=your-gemini-api-key
 ```
 
 Changing `EMBEDDING_MODEL` requires re-embedding rulebook pages so vectors stay in the same space/dimensions as your MongoDB index.
