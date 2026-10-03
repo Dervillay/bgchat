@@ -9,7 +9,7 @@ export const BoardGameSelect = {
     px: '0.75rem',
     color: 'chakra-body-text',
     fontSize: 'md',
-    backgroundColor: 'gray.100',
+    backgroundColor: 'gray.200',
     cursor: 'pointer',
     _dark: {
       backgroundColor: '#3a3a3a',

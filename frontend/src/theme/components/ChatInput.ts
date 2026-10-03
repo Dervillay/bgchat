@@ -19,15 +19,11 @@ export const ChatInput = {
         bg: "chakra-body-message-bg",
       },
       _light: {
-        border: "1px solid",
-        borderColor: "chakra-body-border",
-      },
-      _hover: {
-        borderColor: "chakra-body-border-focus"
+        bg: "gray.100",
+        border: "none",
       },
       _focus: {
         outline: undefined,
-        borderColor: "chakra-body-border-focus",
       }
     },
     input: {
@@ -80,10 +76,6 @@ export const ChatInput = {
         maxW: { base: "100%", md: "40rem" },
         borderRadius: "1.25rem",
         border: "none",
-        _light: {
-          border: "1px solid",
-          borderColor: "chakra-body-border",
-        },
         position: "fixed",
         // Fallback bottom; on mobile ChatInput may override via visualViewport `top`.
         bottom: { base: "0.75rem", md: "2rem" },
