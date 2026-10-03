@@ -5,48 +5,8 @@ import { BoardGameSelect } from "./BoardGameSelect.tsx";
 import { useSpeechToText } from "../hooks/useSpeechToText.ts";
 import { theme } from "../theme/index.ts";
 
+const MOBILE_KEYBOARD_GAP_PX = 12;
 const TEXTAREA_HEIGHT_TRANSITION = "height 0.12s ease-out";
-/** Closely matches typical mobile OS keyboard open/close timing. */
-const KEYBOARD_FOLLOW_MS = 280;
-const KEYBOARD_INSET_EPSILON_PX = 1;
-/** Treat a single large inset change as a snap that should be eased. */
-const KEYBOARD_SNAP_DELTA_PX = 48;
-const KEYBOARD_INSET_STORAGE_KEY = "bgchat:last-keyboard-inset";
-
-const readCachedKeyboardInset = (): number => {
-	try {
-		const raw = sessionStorage.getItem(KEYBOARD_INSET_STORAGE_KEY);
-		const parsed = raw ? Number.parseFloat(raw) : Number.NaN;
-		if (Number.isFinite(parsed) && parsed > 80 && parsed < 800) {
-			return parsed;
-		}
-	} catch {
-		// sessionStorage may be unavailable
-	}
-	if (typeof window !== "undefined") {
-		return Math.round(window.innerHeight * 0.4);
-	}
-	return 280;
-};
-
-const writeCachedKeyboardInset = (inset: number) => {
-	if (inset < 80) {
-		return;
-	}
-	try {
-		sessionStorage.setItem(KEYBOARD_INSET_STORAGE_KEY, String(Math.round(inset)));
-	} catch {
-		// sessionStorage may be unavailable
-	}
-};
-
-const getKeyboardInsetPx = (): number => {
-	const visualViewport = window.visualViewport;
-	if (!visualViewport) {
-		return 0;
-	}
-	return Math.max(0, window.innerHeight - visualViewport.height - visualViewport.offsetTop);
-};
 
 interface ChatInputProps {
 	inputValue: string;
@@ -76,14 +36,10 @@ export const ChatInput: FC<ChatInputProps> = ({
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 	const hasResizedOnceRef = useRef(false);
 	const speechPrefixRef = useRef("");
-	const syncMobilePositionRef = useRef<((options?: { animate?: boolean; inset?: number }) => void) | null>(null);
+	const syncMobilePositionRef = useRef<(() => void) | null>(null);
 	const resizeAnimCleanupRef = useRef<(() => void) | null>(null);
-	const lastKeyboardInsetRef = useRef(0);
-	const isFocusedRef = useRef(false);
 	inputValueRef.current = inputValue;
 
-	// Prefer the real breakpoint once known; default to mobile so keyboard pinning
-	// is ready before the first client layout pass.
 	const isUsingMobile = useBreakpointValue({ base: true, md: false }) ?? true;
 	const pinToBottom = variant === "bottomFixed" || (isUsingMobile && isFocused);
 
@@ -196,9 +152,9 @@ export const ChatInput: FC<ChatInputProps> = ({
 		toggleSpeechRecognition();
 	};
 
-	// Lift the fixed input with the keyboard. Layout stays on svh + resizes-visual so the
-	// page shell doesn't jump; we translate from visualViewport inset each frame.
-	// If the browser only reports the final inset (common), ease large snaps over ~keyboard time.
+	// Pin above the keyboard using only the measured visual viewport (no estimates).
+	// With interactive-widget=resizes-content, CSS `bottom` usually lands correctly;
+	// this covers browsers that still overlay the keyboard.
 	useEffect(() => {
 		const el = containerRef.current;
 		if (!el || !pinToBottom || !isUsingMobile) {
@@ -206,111 +162,50 @@ export const ChatInput: FC<ChatInputProps> = ({
 			return;
 		}
 
-		const clearKeyboardOffset = () => {
+		const clearMobilePosition = () => {
 			el.style.top = "";
 			el.style.bottom = "";
 			el.style.transform = "";
-			el.style.transition = "";
-			el.style.willChange = "";
-			lastKeyboardInsetRef.current = 0;
 		};
 
 		const visualViewport = window.visualViewport;
 		if (!visualViewport) {
-			clearKeyboardOffset();
+			clearMobilePosition();
 			return;
 		}
 
-		let rafId = 0;
-		let pendingAnimate = false;
-		let pendingInset: number | undefined;
-
-		const applyInset = (inset: number, animate: boolean) => {
-			const next = inset < KEYBOARD_INSET_EPSILON_PX ? 0 : inset;
-			const prev = lastKeyboardInsetRef.current;
-			const delta = Math.abs(next - prev);
-			const shouldAnimate = animate || delta >= KEYBOARD_SNAP_DELTA_PX;
-
-			el.style.top = "auto";
-			el.style.bottom = "";
-			el.style.willChange = "transform";
-			el.style.transition = shouldAnimate
-				? `transform ${KEYBOARD_FOLLOW_MS}ms ease-out`
-				: "none";
-			el.style.transform = next > 0 ? `translate3d(0, ${-next}px, 0)` : "";
-			lastKeyboardInsetRef.current = next;
-			writeCachedKeyboardInset(next);
+		const syncToVisualViewport = () => {
+			// Keyboard focus can scroll the document; keep the shell pinned.
+			if (window.scrollY !== 0 || window.scrollX !== 0) {
+				window.scrollTo(0, 0);
+			}
+			const height = el.offsetHeight;
+			const bottomEdge =
+				visualViewport.offsetTop + visualViewport.height - MOBILE_KEYBOARD_GAP_PX;
+			const top = bottomEdge - height;
+			el.style.transform = "";
+			el.style.bottom = "auto";
+			el.style.top = `${Math.max(visualViewport.offsetTop + MOBILE_KEYBOARD_GAP_PX, top)}px`;
 		};
 
-		const syncToVisualViewport = (options?: { animate?: boolean; inset?: number }) => {
-			const explicitInset = options?.inset;
-			const measured = explicitInset ?? getKeyboardInsetPx();
-
-			// While focused, ignore partial undershoots (optimistic lift already rose higher).
-			// Closing still reaches 0 and is applied below.
-			if (
-				explicitInset === undefined &&
-				isFocusedRef.current &&
-				measured > KEYBOARD_INSET_EPSILON_PX &&
-				lastKeyboardInsetRef.current > 0 &&
-				measured + KEYBOARD_SNAP_DELTA_PX < lastKeyboardInsetRef.current
-			) {
-				return;
-			}
-
-			applyInset(measured, Boolean(options?.animate));
-		};
-
-		const scheduleSync = (options?: { animate?: boolean; inset?: number }) => {
-			if (options?.animate) {
-				pendingAnimate = true;
-			}
-			if (options?.inset !== undefined) {
-				pendingInset = options.inset;
-			}
-			if (rafId) {
-				return;
-			}
-			rafId = window.requestAnimationFrame(() => {
-				rafId = 0;
-				const animate = pendingAnimate;
-				const inset = pendingInset;
-				pendingAnimate = false;
-				pendingInset = undefined;
-				syncToVisualViewport({ animate, inset });
-			});
-		};
-
-		const onViewportChange = () => scheduleSync();
-
-		syncMobilePositionRef.current = scheduleSync;
-		// If focus beat the effect mount, keep rising with a cached inset until VV catches up.
-		const measuredInset = getKeyboardInsetPx();
-		if (measuredInset < KEYBOARD_INSET_EPSILON_PX && isFocused) {
-			syncToVisualViewport({ animate: true, inset: readCachedKeyboardInset() });
-		} else {
-			syncToVisualViewport({ animate: measuredInset >= KEYBOARD_SNAP_DELTA_PX });
-		}
-		const resizeObserver = new ResizeObserver(onViewportChange);
+		syncMobilePositionRef.current = syncToVisualViewport;
+		syncToVisualViewport();
+		const resizeObserver = new ResizeObserver(syncToVisualViewport);
 		resizeObserver.observe(el);
-		visualViewport.addEventListener("resize", onViewportChange);
-		visualViewport.addEventListener("scroll", onViewportChange);
-		window.addEventListener("resize", onViewportChange);
+		visualViewport.addEventListener("resize", syncToVisualViewport);
+		visualViewport.addEventListener("scroll", syncToVisualViewport);
+		window.addEventListener("resize", syncToVisualViewport);
 
 		return () => {
-			if (syncMobilePositionRef.current === scheduleSync) {
+			if (syncMobilePositionRef.current === syncToVisualViewport) {
 				syncMobilePositionRef.current = null;
 			}
-			if (rafId) {
-				window.cancelAnimationFrame(rafId);
-			}
 			resizeObserver.disconnect();
-			visualViewport.removeEventListener("resize", onViewportChange);
-			visualViewport.removeEventListener("scroll", onViewportChange);
-			window.removeEventListener("resize", onViewportChange);
-			clearKeyboardOffset();
+			visualViewport.removeEventListener("resize", syncToVisualViewport);
+			visualViewport.removeEventListener("scroll", syncToVisualViewport);
+			window.removeEventListener("resize", syncToVisualViewport);
+			clearMobilePosition();
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- isFocused only needed when pinToBottom becomes true
 	}, [pinToBottom, isUsingMobile]);
 
 	useEffect(() => {
@@ -340,24 +235,8 @@ export const ChatInput: FC<ChatInputProps> = ({
 	};
 
 	const handleFocus = () => {
-		isFocusedRef.current = true;
 		setIsFocused(true);
-		// Start rising with the keyboard immediately. Many browsers only report the final
-		// visualViewport inset after the OS animation, which would otherwise look like a snap.
-		const measured = getKeyboardInsetPx();
-		const inset = measured > KEYBOARD_INSET_EPSILON_PX ? measured : readCachedKeyboardInset();
-		if (syncMobilePositionRef.current) {
-			syncMobilePositionRef.current({ animate: true, inset });
-			return;
-		}
-		const el = containerRef.current;
-		if (!el || !isUsingMobile) {
-			return;
-		}
-		el.style.willChange = "transform";
-		el.style.transition = `transform ${KEYBOARD_FOLLOW_MS}ms ease-out`;
-		el.style.transform = `translate3d(0, ${-inset}px, 0)`;
-		lastKeyboardInsetRef.current = inset;
+		syncMobilePositionRef.current?.();
 	};
 
 	const handleBlur = (e: FocusEvent<HTMLTextAreaElement>) => {
@@ -365,9 +244,7 @@ export const ChatInput: FC<ChatInputProps> = ({
 		if (nextTarget && containerRef.current?.contains(nextTarget)) {
 			return;
 		}
-		isFocusedRef.current = false;
 		setIsFocused(false);
-		syncMobilePositionRef.current?.({ animate: true });
 	};
 
 	const containerStyle = pinToBottom

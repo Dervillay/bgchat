@@ -13,22 +13,30 @@ code {
 html, body {
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
-/* Stable viewport height on mobile so the keyboard doesn't resize the page shell.
-   ChatInput tracks the visual viewport / keyboard separately. */
 @media (max-width: 768px) {
   html, body {
+    position: fixed;
+    inset: 0;
+    width: 100%;
     height: 100%;
-    height: 100svh;
+    height: 100dvh;
     overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: manipulation;
     background-color: var(--chakra-colors-chakra-body-bg);
   }
   
   #root {
+    position: fixed;
+    inset: 0;
+    width: 100%;
     height: 100%;
-    height: 100svh;
+    height: 100dvh;
     overflow: hidden;
+    overscroll-behavior: none;
     background-color: var(--chakra-colors-chakra-body-bg);
   }
 }

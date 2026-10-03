@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Box, Text, Flex } from "@chakra-ui/react";
 import { DarkModeToggle } from "./DarkModeToggle.tsx";
 import { UserProfileMenu } from "./UserProfileMenu.tsx";
@@ -11,8 +11,44 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onOpenFeedbackModal, isUsingMobile, onLogoClick }) => {
+	const headerRef = useRef<HTMLDivElement | null>(null);
+
+	// Keep the header glued to the visible top. Keyboard focus can scroll the
+	// visual viewport, which would otherwise slide position:fixed off-screen.
+	useEffect(() => {
+		const el = headerRef.current;
+		if (!el || !isUsingMobile) {
+			if (el) {
+				el.style.top = "";
+			}
+			return;
+		}
+
+		const visualViewport = window.visualViewport;
+		const sync = () => {
+			const offsetTop = visualViewport?.offsetTop ?? 0;
+			el.style.top = `${offsetTop}px`;
+			if (window.scrollY !== 0 || window.scrollX !== 0) {
+				window.scrollTo(0, 0);
+			}
+		};
+
+		sync();
+		visualViewport?.addEventListener("resize", sync);
+		visualViewport?.addEventListener("scroll", sync);
+		window.addEventListener("scroll", sync, { passive: true });
+
+		return () => {
+			visualViewport?.removeEventListener("resize", sync);
+			visualViewport?.removeEventListener("scroll", sync);
+			window.removeEventListener("scroll", sync);
+			el.style.top = "";
+		};
+	}, [isUsingMobile]);
+
 	return (
 		<Box
+			ref={headerRef}
 			position="fixed"
 			top={0}
 			left={0}
@@ -25,31 +61,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenFeedbackModal, isUsingMobi
 			justifyContent="space-between"
 			px={{ base: 3, md: 5 }}
 			zIndex={10}
-			style={{
-				position: 'fixed',
-				top: 0,
-				left: 0,
-				right: 0,
-				transform: 'none'
-			}}
-			sx={{
-				// Mobile-specific header handling
-				"@media (max-width: 768px)": {
-					height: "3.5rem",
-					minHeight: "3.5rem",
-					maxHeight: "3.5rem",
-					position: "fixed",
-					top: 0,
-					left: 0,
-					right: 0,
-					// Ensure header stays visible when keyboard appears
-					"&:focus-within": {
-						height: "3.5rem",
-						minHeight: "3.5rem",
-						maxHeight: "3.5rem"
-					}
-				}
-			}}
 		>
 			<Flex
 				align="center"

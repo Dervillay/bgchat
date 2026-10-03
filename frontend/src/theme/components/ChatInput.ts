@@ -77,7 +77,7 @@ export const ChatInput = {
         borderRadius: "1.25rem",
         border: "none",
         position: "fixed",
-        // Mobile: visualViewport-driven translateY keeps this above the keyboard.
+        // On mobile, ChatInput may pin via measured visualViewport `top` while the keyboard is open.
         bottom: { base: "0.75rem", md: "2rem" },
         left: { base: "0.75rem", md: "50%" },
         right: { base: "0.75rem", md: "auto" },
