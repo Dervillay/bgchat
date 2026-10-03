@@ -132,7 +132,7 @@ BOARD_GAMES = [
         "rulebooks": [
             {
                 "name": "Wingspan",
-                "download_url": "https://www.szellemlovas.hu/szabalyok/fesztavEN.pdf",
+                "download_url": "https://cdn.1j1ju.com/medias/ff/16/4c-wingspan-rulebook.pdf",
             },
             {
                 "name": "Wingspan Appendix",

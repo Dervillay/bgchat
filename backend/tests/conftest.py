@@ -19,6 +19,8 @@ os.environ.update({
     'MONGODB_PASSWORD': 'test_password',
     'MONGODB_DB_NAME': 'bgchat_test',
     'OPENAI_API_KEY': 'sk-test-key-1234567890',
+    'CHAT_MODEL': 'gpt-4o-mini',
+    'EMBEDDING_MODEL': 'text-embedding-ada-002',
     'AUTH0_DOMAIN': 'test.auth0.com',
     'AUTH0_AUDIENCE': 'test-audience',
     # Use HS256 so we can test with a simple secret string (RS256 requires a key pair which is overkill for testing)

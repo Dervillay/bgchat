@@ -74,13 +74,36 @@ function downloadFile(url, filePath, maxRedirects = 5) {
     });
 }
 
+function extractZip(zipFile, destDir) {
+    const attempts = [
+        () => execSync(`unzip -q "${zipFile}" -d "${destDir}"`, { stdio: 'inherit' }),
+        () => execSync(`python3 -m zipfile -e "${zipFile}" "${destDir}"`, { stdio: 'inherit' }),
+        () => execSync(
+            `powershell -NoProfile -Command "Expand-Archive -Path '${zipFile.replace(/'/g, "''")}' -DestinationPath '${destDir.replace(/'/g, "''")}' -Force"`,
+            { stdio: 'inherit' }
+        ),
+    ];
+
+    let lastError;
+    for (const attempt of attempts) {
+        try {
+            attempt();
+            return;
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError || new Error('No supported zip extractor found (unzip, python3, or powershell)');
+}
+
 downloadFile(downloadUrl, zipPath)
     .then(() => {
         console.log('📦 Download complete, extracting...');
-        
+
         try {
-            // Extract the zip file
-            execSync(`cd "${publicDir}" && unzip -q pdfjs-dist.zip && rm pdfjs-dist.zip`, { stdio: 'inherit' });
+            extractZip(zipPath, publicDir);
+            fs.unlinkSync(zipPath);
             console.log('✅ PDF.js viewer setup complete!');
             console.log(`   📁 Files extracted to: ${webDir}`);
             console.log(`   📁 Build files at: ${buildDir}`);
