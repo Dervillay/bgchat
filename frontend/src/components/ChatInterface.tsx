@@ -285,7 +285,7 @@ const ChatInterface = () => {
 			justify="center" 
 			align="center"
 			gap={hasInteracted ? 2 : 8}
-			h={{ base: "100svh", md: "100vh" }}
+			h={{ base: "100dvh", md: "100vh" }}
 			maxW="40rem"
 			mx="auto"
 			overflow="hidden"
