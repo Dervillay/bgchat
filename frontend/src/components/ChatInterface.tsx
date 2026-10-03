@@ -9,7 +9,6 @@ import { Header } from "./Header.tsx";
 import { MessageContainer } from "./MessageContainer.tsx";
 import { FeedbackModal } from "./FeedbackModal.tsx";
 import { FeedbackLink } from "./FeedbackLink.tsx";
-import { ThemedFaviconIcon } from "./ThemedFaviconIcon.tsx";
 
 declare global {
 	interface Window {
@@ -293,20 +292,18 @@ const ChatInterface = () => {
 			onLogoClick={handleLogoClick}
 		/>
 			{!hasInteracted ? (
-				<Flex align="center" justify="center" gap={{ base: 2.5, md: 3 }} px={4}>
-					<ThemedFaviconIcon boxSize={{ base: "2.75rem", md: "3.15rem" }} />
-					<Text
-						fontFamily="heading"
-						color="chakra-body-text"
-						fontSize={{ base: "2.5rem", md: "2.75rem" }}
-						fontWeight="500"
-						letterSpacing="-0.03em"
-						lineHeight="1"
-						textAlign="center"
-					>
-						{greeting}
-					</Text>
-				</Flex>
+				<Text
+					fontFamily="heading"
+					color="chakra-body-text"
+					fontSize={{ base: "2.5rem", md: "2.75rem" }}
+					fontWeight="500"
+					letterSpacing="-0.03em"
+					lineHeight="1"
+					textAlign="center"
+					px={4}
+				>
+					{greeting}
+				</Text>
 			) : (
 				<>
 					<MessageContainer
