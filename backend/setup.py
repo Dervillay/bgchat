@@ -99,7 +99,12 @@ def process_and_store_rulebook_text(
         for rulebook in board_game["rulebooks"]:
             print_bold(f'\n{board_game["name"]} - {rulebook["name"]}')
 
-            reader = PdfReader(f'{RULEBOOKS_PATH}/{board_game["name"]}/{rulebook["name"]}.pdf')
+            rulebook_path = f'{RULEBOOKS_PATH}/{board_game["name"]}/{rulebook["name"]}.pdf'
+            if not os.path.exists(rulebook_path):
+                print(f'Skipping — PDF not found: {rulebook_path}')
+                continue
+
+            reader = PdfReader(rulebook_path)
             page_count = len(reader.pages)
 
             existing_rulebook_pages = mongodb_client.get_rulebook_pages(
