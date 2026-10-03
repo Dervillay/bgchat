@@ -167,7 +167,9 @@ def delete_messages_from_index():
         if index < 0:
             return validation_error("Index must be non-negative")
 
-        current_app.orchestrator.delete_messages_from_index(request.user_id, board_game, index)
+        current_app.orchestrator.delete_messages_from_index(
+            request.user_id, board_game, index
+        )
 
         return success_response()
     except Exception as e:

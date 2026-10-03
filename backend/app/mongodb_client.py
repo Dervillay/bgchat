@@ -83,10 +83,14 @@ class MongoDBClient:
         """Get the current UTC time."""
         return datetime.now(timezone.utc)
 
-    def _raise_on_no_user_id_match(self, result: UpdateResult) -> None:
+    def _raise_on_no_user_id_match(self, result: UpdateResult, user_id: str | None = None) -> None:
         """Raise an error if an update did not find any documents for the given user_id."""
         if result.matched_count == 0:
-            error_message = f"No document found for user_id: {result.user_id}"
+            error_message = (
+                f"No document found for user_id: {user_id}"
+                if user_id is not None
+                else "No document found for user_id"
+            )
             logger.error(error_message)
             raise ValueError(error_message)
 
@@ -158,7 +162,8 @@ class MongoDBClient:
         """Clear the message history for a given user and board game."""
         self._ensure_connection()
         try:
-            result = self.db.user_data.update_one(
+            # Idempotent: if the user doc is missing, there is nothing to clear.
+            self.db.user_data.update_one(
                 {"user_id": user_id},
                 {
                     "$set": {
@@ -167,7 +172,6 @@ class MongoDBClient:
                     }
                 }
             )
-            self._raise_on_no_user_id_match(result)
         except Exception as e:
             logger.error("Error clearing message history: %s", str(e))
             raise
@@ -198,7 +202,7 @@ class MongoDBClient:
                     }
                 }
             )
-            self._raise_on_no_user_id_match(result)
+            self._raise_on_no_user_id_match(result, user_id=user_id)
 
         except Exception as e:
             logger.error("Error deleting messages: %s", str(e))
