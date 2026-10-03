@@ -3,6 +3,9 @@ DEFAULT_TIMEOUT_SECONDS = 5
 MAX_COST_PER_USER_PER_DAY_USD = 0.10
 JWT_VALIDATION_LEEWAY_SECONDS = 60
 
+# RAG retrieval
+RULEBOOK_PAGE_LIMIT = 5
+
 # Error message constants
 # User ID validation errors
 ERROR_USER_ID_CANNOT_BE_EMPTY = "User ID cannot be empty"
