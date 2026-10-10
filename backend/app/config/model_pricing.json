@@ -37,6 +37,12 @@
     "one_million_output_tokens": 5.0,
     "one_thousand_web_searches": 10.0
   },
+  "claude-haiku-5-5": {
+    "provider": "anthropic",
+    "one_million_input_tokens": 0.1,
+    "one_million_output_tokens": 0.5,
+    "one_thousand_web_searches": 10.0
+  },
   "claude-sonnet-4-6": {
     "provider": "anthropic",
     "one_million_input_tokens": 3.0,
