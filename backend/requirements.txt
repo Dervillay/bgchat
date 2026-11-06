@@ -5,11 +5,11 @@ gunicorn==26.2.0
 python-dotenv==1.2.4
 PyJWT==2.15.1
 pymongo==4.19.0
-openai==3.40.0
-anthropic==2.3.0
-google-genai==2.33.0
+openai==3.44.0
+anthropic==2.4.0
+google-genai==2.34.0
 tiktoken==0.14.0
-pypdf==6.21.3
+pypdf==6.21.4
 requests==2.34.2
 tqdm==4.70.1
 cryptography==50.0.2
