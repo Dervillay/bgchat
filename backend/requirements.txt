@@ -4,12 +4,12 @@ flask-limiter==4.1.1
 gunicorn==27.0.1
 python-dotenv==1.2.4
 PyJWT==2.15.1
-pymongo==4.20.0
-openai==3.53.0
-anthropic==2.10.0
-google-genai==3.4.0
+pymongo==4.20.1
+openai==3.59.0
+anthropic==2.13.0
+google-genai==3.6.1
 tiktoken==0.14.0
-pypdf==7.1.0
+pypdf==7.1.1
 requests==2.34.2
 tqdm==4.70.1
 cryptography==50.0.2
